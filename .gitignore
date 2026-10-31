@@ -1,0 +1,20 @@
+# Python
+__pycache__/
+*.py[cod]
+venv/
+.venv/
+
+# Secrets - never commit
+.env
+
+# Local database and instance folder
+instance/
+*.db
+*.sqlite3
+
+# Testing and editor files
+.pytest_cache/
+.coverage
+htmlcov/
+.vscode/
+.idea/
