@@ -2,7 +2,7 @@
 
 A web-based personal productivity assistant built with Python and Flask. Users can chat with an AI, manage tasks, reminders and notes, and see everything on one dashboard.
 
-> **Status:** Day 1 of 29 — requirements and planning. No application code yet.
+> **Status:** Day 2 of 29 — architecture and environment setup. No application code yet.
 
 ## Planned technology stack
 
@@ -27,3 +27,16 @@ A web-based personal productivity assistant built with Python and Flask. Users c
 ## Author
 
 Kelvin John — Computer Science student project.
+
+## Quick start (Windows)
+
+```powershell
+py -m venv venv
+.\venv\Scripts\Activate.ps1
+pip install -r requirements.txt
+Copy-Item .env.example .env
+python scripts/check_environment.py
+python -m pytest
+```
+
+Full instructions: [Development setup](documentation/Development_Setup.md) · Architecture: [System architecture](documentation/UML/System_Architecture.md)
