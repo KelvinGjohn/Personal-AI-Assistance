@@ -2,7 +2,7 @@
 
 A web-based personal productivity assistant built with Python and Flask. Users can chat with an AI, manage tasks, reminders and notes, and see everything on one dashboard.
 
-> **Status:** Day 3 of 29 — Flask application structure is running (home page and health check).
+> **Status:** Day 4 of 29 — Flask app running with a SQLite database (7 tables).
 
 ## Planned technology stack
 
@@ -22,6 +22,7 @@ A web-based personal productivity assistant built with Python and Flask. Users c
 - [Day-by-day plan](PLAN.md)
 - [Project proposal](documentation/SRS/Project_Proposal.md)
 - [Software Requirements Specification v0.1](documentation/SRS/SRS_v0.1.md)
+- [Database design and ER diagram](documentation/Database_Design.md)
 - [Daily development logs](documentation/daily_logs/)
 
 ## Author

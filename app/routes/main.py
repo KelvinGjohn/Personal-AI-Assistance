@@ -8,6 +8,9 @@ A Blueprint is a group of related routes. Later days add more Blueprints
 from datetime import datetime
 
 from flask import Blueprint, current_app, jsonify, render_template
+from sqlalchemy import text
+
+from app.extensions import db
 
 main_bp = Blueprint("main", __name__)
 
@@ -24,5 +27,13 @@ def index():
 
 @main_bp.route("/health")
 def health():
-    """Small JSON endpoint to check the server is running (useful for deployment)."""
-    return jsonify(status="ok", app=current_app.config["APP_NAME"])
+    """Small JSON endpoint to check the server and database are working (useful for deployment)."""
+    try:
+        db.session.execute(text("SELECT 1"))
+        database = "ok"
+    except Exception:
+        database = "error"
+
+    status = "ok" if database == "ok" else "error"
+    return jsonify(status=status, database=database, app=current_app.config["APP_NAME"]), \
+        (200 if status == "ok" else 503)

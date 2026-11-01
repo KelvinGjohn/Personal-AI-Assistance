@@ -8,7 +8,7 @@ One day at a time. A day is only marked done when its feature works and is teste
 | 1  | Requirements analysis | Project proposal and initial SRS | Done |
 | 2  | Architecture and environment setup | Dev environment, Git repo, architecture diagram | Done |
 | 3  | Project structure and first Flask app | Running Flask application | Done |
-| 4  | Database design | SQLAlchemy models and ER diagram | |
+| 4  | Database design | SQLAlchemy models and ER diagram | Done |
 | **Phase 2 — Core application** ||||
 | 5  | Frontend foundation | Base layout, sidebar, header (Bootstrap) | |
 | 6  | Dashboard | Dashboard showing real database data | |

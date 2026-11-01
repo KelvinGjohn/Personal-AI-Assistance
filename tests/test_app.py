@@ -20,7 +20,8 @@ def test_home_page_loads(client):
 def test_health_check_returns_json(client):
     response = client.get("/health")
     assert response.status_code == 200
-    assert response.get_json() == {"status": "ok", "app": "Personal AI Assistant"}
+    assert response.get_json() == {"status": "ok", "database": "ok",
+                                   "app": "Personal AI Assistant"}
 
 
 def test_unknown_page_returns_404(client):

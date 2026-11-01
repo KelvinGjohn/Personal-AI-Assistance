@@ -34,8 +34,20 @@ def create_app(config_name=None):
         raise RuntimeError("SECRET_KEY is not set. Copy .env.example to .env "
                            "and give SECRET_KEY a value.")
 
+    init_database(app)
     register_blueprints(app)
     return app
+
+
+def init_database(app):
+    """Connect SQLAlchemy to the app and create any missing tables."""
+    from app.extensions import db
+    from app import models  # noqa: F401  (registers every model with SQLAlchemy)
+
+    db.init_app(app)
+    with app.app_context():
+        # Creates tables that don't exist yet. It never deletes or changes existing data.
+        db.create_all()
 
 
 def register_blueprints(app):
