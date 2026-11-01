@@ -1,0 +1,21 @@
+/* Basic styles for Day 3. Replaced by the Bootstrap layout on Day 5. */
+body {
+    margin: 0;
+    font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+    background: #fafaf9;
+    color: #1c1917;
+}
+
+.container {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 48px 16px 0;
+}
+
+.muted {
+    color: #57534e;
+}
+
+a {
+    color: #0f766e;
+}
