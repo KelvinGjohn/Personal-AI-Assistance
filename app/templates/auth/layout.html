@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{% block title %}{% endblock %} · {{ app_name }}</title>
+    {% include "partials/head_assets.html" %}
+</head>
+<body>
+    {# Login and registration pages are simple: no sidebar, just a centered card #}
+    <main class="app-auth">
+        <div class="app-auth-brand">
+            <span class="app-brand-mark" aria-hidden="true"><i class="bi bi-stars"></i></span>
+            <span>{{ app_name }}</span>
+        </div>
+        <div class="card app-card app-auth-card">
+            <div class="card-body">
+                <h1 class="h4 mb-3">{% block heading %}{% endblock %}</h1>
+                {% include "partials/flash_messages.html" %}
+                {% block content %}{% endblock %}
+            </div>
+        </div>
+    </main>
+    {% include "partials/scripts.html" %}
+</body>
+</html>

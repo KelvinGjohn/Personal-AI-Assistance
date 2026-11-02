@@ -1,0 +1,10 @@
+<!-- Bootstrap 5 CSS. "integrity" makes the browser refuse the file if the CDN copy was altered. -->
+<link rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+      integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH"
+      crossorigin="anonymous">
+<!-- Bootstrap Icons (icon font) -->
+<link rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+<!-- Our own styles come last so they can adjust Bootstrap's defaults -->
+<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">

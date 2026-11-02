@@ -1,0 +1,14 @@
+{#
+  A macro is a reusable piece of template, like a function.
+  It draws one text-style form field with its label and any error messages.
+  Extra options (like autocomplete) are passed straight to the input.
+#}
+{% macro render_field(field) %}
+<div class="mb-3">
+    <label class="form-label" for="{{ field.id }}">{{ field.label.text }}</label>
+    {{ field(class="form-control is-invalid" if field.errors else "form-control", **kwargs) }}
+    {% for error in field.errors %}
+    <div class="invalid-feedback">{{ error }}</div>
+    {% endfor %}
+</div>
+{% endmacro %}

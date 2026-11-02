@@ -35,6 +35,7 @@ def create_app(config_name=None):
                            "and give SECRET_KEY a value.")
 
     init_database(app)
+    init_security(app)
     register_blueprints(app)
     register_template_helpers(app)
     register_error_handlers(app)
@@ -52,11 +53,21 @@ def init_database(app):
         db.create_all()
 
 
+def init_security(app):
+    """Connect login sessions and CSRF protection to the app."""
+    from app.extensions import csrf, login_manager
+
+    login_manager.init_app(app)
+    csrf.init_app(app)
+
+
 def register_blueprints(app):
     """Connect each group of routes (Blueprint) to the app."""
+    from app.routes.auth import auth_bp
     from app.routes.main import main_bp
 
     app.register_blueprint(main_bp)
+    app.register_blueprint(auth_bp)
 
 
 def register_template_helpers(app):
@@ -70,6 +81,12 @@ def register_template_helpers(app):
 
 def register_error_handlers(app):
     """Show friendly error pages that use the normal layout."""
+    from flask_wtf.csrf import CSRFError
+
+    @app.errorhandler(CSRFError)
+    def csrf_error(error):
+        # Usually a form left open too long, so its security token has expired
+        return render_template("errors/400.html"), 400
 
     @app.errorhandler(404)
     def page_not_found(error):

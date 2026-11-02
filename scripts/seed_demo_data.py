@@ -4,10 +4,13 @@ dashboard has something to show.
 
     python scripts/seed_demo_data.py
 
-Running it again replaces the demo user's data. Other users are not touched.
-All dates are relative to now, so "upcoming" items are always upcoming.
+It prints a new random password for the demo account each time, so no password
+is ever stored in the code. Running it again replaces the demo user's data.
+Other users are not touched. All dates are relative to now, so "upcoming"
+items are always upcoming.
 """
 
+import secrets
 import sys
 from datetime import timedelta
 from pathlib import Path
@@ -24,16 +27,19 @@ DEMO_USERNAME = "demo"
 
 
 def seed_demo_data():
-    """Delete the old demo user (and, by cascade, their data), then create a new one."""
+    """
+    Delete the old demo user (and, by cascade, their data), then create a new one.
+    Returns the new user and their generated password.
+    """
     old_user = User.query.filter_by(username=DEMO_USERNAME).first()
     if old_user:
         db.session.delete(old_user)
         db.session.commit()
 
     now = utc_now()
-    # "!" is not a valid password hash, so nobody can ever log in as this user
-    user = User(username=DEMO_USERNAME, email="demo@example.com",
-                password_hash="!", full_name="Demo User")
+    password = secrets.token_urlsafe(12)
+    user = User(username=DEMO_USERNAME, email="demo@example.com", full_name="Demo User")
+    user.set_password(password)
 
     user.tasks = [
         Task(title="Submit database assignment", priority="high", category="University",
@@ -78,7 +84,7 @@ def seed_demo_data():
 
     db.session.add(user)
     db.session.commit()
-    return user
+    return user, password
 
 
 if __name__ == "__main__":
@@ -87,7 +93,8 @@ if __name__ == "__main__":
         sys.exit("Demo data can only be added in the development configuration.")
 
     with app.app_context():
-        demo = seed_demo_data()
+        demo, demo_password = seed_demo_data()
         print(f"Created user '{demo.username}': {len(demo.tasks)} tasks, "
               f"{len(demo.reminders)} reminders, {len(demo.notes)} notes, "
               f"{len(demo.conversations)} conversation.")
+        print(f"Log in with username '{demo.username}' and password: {demo_password}")

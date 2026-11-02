@@ -10,8 +10,8 @@ def test_testing_config_is_used(app):
     assert app.config["SQLALCHEMY_DATABASE_URI"] == "sqlite:///:memory:"
 
 
-def test_home_page_loads(client):
-    response = client.get("/")
+def test_home_page_loads(auth_client):
+    response = auth_client.get("/")
     assert response.status_code == 200
     assert b"Personal AI Assistant" in response.data
     assert b"Dashboard" in response.data

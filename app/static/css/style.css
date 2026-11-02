@@ -16,8 +16,8 @@
     /* Make Bootstrap's primary colour match our accent */
     --bs-primary: #0f766e;
     --bs-primary-rgb: 15, 118, 110;
-    --bs-link-color: #0f766e;
-    --bs-link-hover-color: #115e59;
+    --bs-link-color-rgb: 15, 118, 110;
+    --bs-link-hover-color-rgb: 17, 94, 89;
 }
 
 body {
@@ -183,6 +183,43 @@ body {
     border-radius: 50%;
     background: var(--app-accent-soft);
     color: var(--app-accent);
+}
+
+.app-user-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    min-height: 44px;
+    border: 0;
+}
+
+/* ---------- Login and registration pages ---------- */
+.app-auth {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+    min-height: 100vh;
+    padding: 24px 16px;
+}
+
+.app-auth-brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 1.1rem;
+    font-weight: 600;
+}
+
+.app-auth-brand .app-brand-mark {
+    color: #fff;
+}
+
+.app-auth-card {
+    width: 100%;
+    max-width: 420px;
+    padding: 8px;
 }
 
 /* ---------- Cards ---------- */

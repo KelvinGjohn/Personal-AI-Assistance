@@ -1,0 +1,22 @@
+{% extends "auth/layout.html" %}
+{% from "partials/form_field.html" import render_field %}
+
+{% block title %}Log in{% endblock %}
+{% block heading %}Log in{% endblock %}
+
+{% block content %}
+{# No action attribute: the form posts to the same URL, which keeps any ?next=... value #}
+<form method="post" novalidate>
+    {{ form.hidden_tag() }}
+    {{ render_field(form.identifier, autocomplete="username", autofocus=true) }}
+    {{ render_field(form.password, autocomplete="current-password") }}
+    <div class="form-check mb-3">
+        {{ form.remember(class="form-check-input") }}
+        <label class="form-check-label" for="{{ form.remember.id }}">{{ form.remember.label.text }}</label>
+    </div>
+    {{ form.submit(class="btn btn-primary w-100") }}
+</form>
+<p class="text-center mt-3 mb-0">
+    New here? <a href="{{ url_for('auth.register') }}">Create an account</a>
+</p>
+{% endblock %}

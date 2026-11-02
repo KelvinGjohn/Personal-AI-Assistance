@@ -113,30 +113,31 @@ def test_dashboard_data_never_includes_another_users_records(db, alice, make_use
     assert [card["value"] for card in data["summary_cards"]] == [0, 0, 0, 0]
 
 
-def test_page_with_no_users_shows_empty_state(client):
-    html = client.get("/").get_data(as_text=True)
-    assert "has no users yet" in html
+def test_new_user_sees_empty_state(auth_client):
+    html = auth_client.get("/").get_data(as_text=True)
+    assert "Welcome, tester" in html
     assert "No upcoming reminders." in html
     assert "No notes yet." in html
 
 
-def test_page_shows_real_data(db, client, alice):
+def test_page_shows_real_data(db, client, login, alice):
     now = datetime.now() + timedelta(days=1)
     add(db,
         Task(user=alice, title="Write the report", priority="high", due_date=now),
         Reminder(user=alice, title="Call the bank", remind_at=now),
         Note(user=alice, title="Flask notes", content="Blueprints group routes", category="Study"),
         )
+    login(client, "alice")
     html = client.get("/").get_data(as_text=True)
-    assert "showing data for <strong>alice</strong>" in html
     for text in ("Write the report", "app-priority-high", "Call the bank",
                  "Flask notes", "Blueprints group routes", "Study"):
         assert text in html
 
 
-def test_page_escapes_user_text(db, client, alice):
+def test_page_escapes_user_text(db, client, login, alice):
     """A note title containing HTML must be shown as text, never run as a script."""
     add(db, Note(user=alice, title="<script>alert(1)</script>"))
+    login(client, "alice")
     html = client.get("/").get_data(as_text=True)
     assert "<script>alert(1)</script>" not in html
     assert "&lt;script&gt;" in html
@@ -156,3 +157,13 @@ def test_seed_can_run_twice_and_leaves_other_users_alone(db, alice):
     demo = User.query.filter_by(username="demo").first()
     assert len(demo.tasks) == 8
     assert Task.query.filter_by(user_id=demo.id).count() == 8
+
+
+def test_seed_generates_a_new_working_password_each_time(db):
+    first_user, first_password = seed.seed_demo_data()
+    assert first_user.check_password(first_password)
+
+    second_user, second_password = seed.seed_demo_data()
+    assert second_password != first_password
+    assert second_user.check_password(second_password)
+    assert not second_user.check_password(first_password)

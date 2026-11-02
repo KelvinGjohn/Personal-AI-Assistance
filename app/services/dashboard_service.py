@@ -129,8 +129,3 @@ def get_dashboard_data(user_id, now=None):
         "upcoming_reminders": get_upcoming_reminders(user_id, now),
         "recent_notes": get_recent_notes(user_id),
     }
-
-
-def get_empty_dashboard_data():
-    """What the dashboard shows when there is no user in the database yet."""
-    return get_dashboard_data(user_id=None)

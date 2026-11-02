@@ -8,11 +8,22 @@ from here without importing the app itself.
 
 import sqlite3
 
+from flask_login import LoginManager
 from flask_sqlalchemy import SQLAlchemy
+from flask_wtf.csrf import CSRFProtect
 from sqlalchemy import event
 from sqlalchemy.engine import Engine
 
 db = SQLAlchemy()
+
+# Remembers who is logged in between requests, using a signed session cookie
+login_manager = LoginManager()
+login_manager.login_view = "auth.login"  # where @login_required sends visitors
+login_manager.login_message = "Please log in to continue."
+login_manager.login_message_category = "info"
+
+# Rejects any POST request that doesn't carry a valid CSRF token
+csrf = CSRFProtect()
 
 
 @event.listens_for(Engine, "connect")

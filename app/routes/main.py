@@ -2,33 +2,24 @@
 Main routes: the dashboard and a health check.
 
 A Blueprint is a group of related routes. Later days add more Blueprints
-(auth, tasks, reminders, notes, chat...) in this same folder.
+(tasks, reminders, notes, chat...) in this same folder.
 """
 
 from flask import Blueprint, current_app, jsonify, render_template
+from flask_login import current_user, login_required
 from sqlalchemy import text
 
 from app.extensions import db
-from app.models import User
-from app.services.dashboard_service import get_dashboard_data, get_empty_dashboard_data
+from app.services.dashboard_service import get_dashboard_data
 
 main_bp = Blueprint("main", __name__)
 
 
-def get_dashboard_user():
-    """
-    TEMPORARY for Day 6: login does not exist yet, so show the first user.
-    Day 7 replaces this with Flask-Login's current_user and protects the page.
-    """
-    return User.query.order_by(User.id).first()
-
-
 @main_bp.route("/")
+@login_required
 def index():
-    """The dashboard, filled with real data from the database."""
-    user = get_dashboard_user()
-    data = get_dashboard_data(user.id) if user else get_empty_dashboard_data()
-    return render_template("dashboard.html", dashboard_user=user, **data)
+    """The logged-in user's dashboard. Visitors are redirected to the login page."""
+    return render_template("dashboard.html", **get_dashboard_data(current_user.id))
 
 
 @main_bp.route("/health")

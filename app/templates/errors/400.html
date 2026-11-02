@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+
+{% block title %}Form expired{% endblock %}
+{% block page_title %}Form expired{% endblock %}
+
+{% block content %}
+<div class="app-empty py-5">
+    <i class="bi bi-hourglass-bottom" aria-hidden="true"></i>
+    <p class="h5">That form has expired.</p>
+    <p class="text-body-secondary">For your security, forms stop working after a while. Please go back, reload the page and try again.</p>
+    <a class="btn btn-primary" href="{{ url_for('main.index') }}">Back to dashboard</a>
+</div>
+{% endblock %}
