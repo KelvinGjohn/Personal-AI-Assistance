@@ -1,12 +1,13 @@
 {#
   A macro is a reusable piece of template, like a function.
-  It draws one text-style form field with its label and any error messages.
+  It draws one form field with its label and any error messages.
+  Dropdowns pass control_class="form-select", Bootstrap's class for them.
   Extra options (like autocomplete) are passed straight to the input.
 #}
-{% macro render_field(field) %}
+{% macro render_field(field, control_class="form-control") %}
 <div class="mb-3">
     <label class="form-label" for="{{ field.id }}">{{ field.label.text }}</label>
-    {{ field(class="form-control is-invalid" if field.errors else "form-control", **kwargs) }}
+    {{ field(class=(control_class ~ " is-invalid") if field.errors else control_class, **kwargs) }}
     {% for error in field.errors %}
     <div class="invalid-feedback">{{ error }}</div>
     {% endfor %}

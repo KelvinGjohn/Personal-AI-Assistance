@@ -13,7 +13,7 @@ One day at a time. A day is only marked done when its feature works and is teste
 | 5  | Frontend foundation | Base layout, sidebar, header (Bootstrap) | Done |
 | 6  | Dashboard | Dashboard showing real database data | Done |
 | 7  | Registration and login | Flask-Login authentication | Done |
-| 8  | Profile and settings | Edit profile, change password, preferences | |
+| 8  | Profile and settings | Edit profile, change password, preferences | Done |
 | 9  | Tasks | Full task management module | |
 | 10 | Reminders | Reminder management with due detection | |
 | 11 | Notes | Notes with categories and search | |

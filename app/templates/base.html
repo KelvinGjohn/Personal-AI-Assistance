@@ -38,6 +38,11 @@
                         </button>
                         <ul class="dropdown-menu dropdown-menu-end">
                             <li>
+                                <a class="dropdown-item" href="{{ url_for('settings.index') }}">
+                                    <i class="bi bi-gear" aria-hidden="true"></i> Settings
+                                </a>
+                            </li>
+                            <li>
                                 {# Logging out changes data, so it is a POST form with a CSRF token, not a link #}
                                 <form method="post" action="{{ url_for('auth.logout') }}">
                                     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">

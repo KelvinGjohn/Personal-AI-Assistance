@@ -7,9 +7,9 @@ page is built. Until that route exists, the template shows the item as
 disabled with a "Day N" badge instead of a broken link.
 """
 
-from datetime import datetime
-
 from flask import current_app, request
+
+from app.utils import to_user_time, utc_now
 
 NAV_ITEMS = [
     {"label": "Dashboard",     "icon": "bi-grid-1x2",      "endpoint": "main.index",          "day": 5},
@@ -44,5 +44,5 @@ def inject_layout_data():
     return {
         "nav_items": build_nav_items(),
         "app_name": current_app.config["APP_NAME"],
-        "today": datetime.now(),
+        "today": to_user_time(utc_now()),
     }

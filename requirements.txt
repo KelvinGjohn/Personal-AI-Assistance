@@ -18,5 +18,8 @@ python-dotenv==1.2.4
 # HTTP client for calling the AI provider
 requests==2.34.2
 
+# Time zone data (Windows has none built in)
+tzdata==2026.6
+
 # Testing
 pytest==9.2.0
