@@ -2,7 +2,7 @@
 
 A web-based personal productivity assistant built with Python and Flask. Users can chat with an AI, manage tasks, reminders and notes, and see everything on one dashboard.
 
-> **Status:** Day 4 of 29 — Flask app running with a SQLite database (7 tables).
+> **Status:** Day 5 of 29 — responsive Bootstrap layout with sidebar and dashboard page. Dashboard data arrives on Day 6.
 
 ## Planned technology stack
 

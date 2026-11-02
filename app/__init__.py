@@ -8,7 +8,7 @@ one global app object means tests can create their own app with test settings.
 import os
 
 from dotenv import load_dotenv
-from flask import Flask
+from flask import Flask, render_template
 
 # Read the .env file into environment variables BEFORE the config is imported,
 # so config/settings.py can see SECRET_KEY, DATABASE_URL, etc.
@@ -36,6 +36,8 @@ def create_app(config_name=None):
 
     init_database(app)
     register_blueprints(app)
+    register_template_helpers(app)
+    register_error_handlers(app)
     return app
 
 
@@ -55,3 +57,22 @@ def register_blueprints(app):
     from app.routes.main import main_bp
 
     app.register_blueprint(main_bp)
+
+
+def register_template_helpers(app):
+    """Make the sidebar and header data available to every template."""
+    from app.navigation import inject_layout_data
+
+    app.context_processor(inject_layout_data)
+
+
+def register_error_handlers(app):
+    """Show friendly error pages that use the normal layout."""
+
+    @app.errorhandler(404)
+    def page_not_found(error):
+        return render_template("errors/404.html"), 404
+
+    @app.errorhandler(500)
+    def internal_server_error(error):
+        return render_template("errors/500.html"), 500

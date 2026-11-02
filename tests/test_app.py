@@ -14,7 +14,7 @@ def test_home_page_loads(client):
     response = client.get("/")
     assert response.status_code == 200
     assert b"Personal AI Assistant" in response.data
-    assert b"The Flask application is running." in response.data
+    assert b"Dashboard" in response.data
 
 
 def test_health_check_returns_json(client):

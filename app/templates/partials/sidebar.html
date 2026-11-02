@@ -1,0 +1,40 @@
+{#
+  Sidebar navigation.
+  "offcanvas-lg": on large screens it is a normal fixed sidebar; on smaller
+  screens it is hidden and slides in when the header's menu button is pressed.
+#}
+<aside class="offcanvas-lg offcanvas-start app-sidebar" tabindex="-1" id="sidebar" aria-labelledby="sidebar-title">
+    <div class="offcanvas-header app-brand">
+        <a class="app-brand-link" href="{{ url_for('main.index') }}" id="sidebar-title">
+            <span class="app-brand-mark" aria-hidden="true"><i class="bi bi-stars"></i></span>
+            <span>{{ app_name }}</span>
+        </a>
+        <button type="button" class="btn-close btn-close-white d-lg-none" data-bs-dismiss="offcanvas"
+                data-bs-target="#sidebar" aria-label="Close menu"></button>
+    </div>
+
+    <div class="offcanvas-body">
+        <nav aria-label="Main navigation" class="w-100">
+            <ul class="nav flex-column app-nav">
+                {% for item in nav_items %}
+                <li class="nav-item">
+                    {% if item.is_available %}
+                    <a class="nav-link {% if item.is_active %}active{% endif %}"
+                       href="{{ url_for(item.endpoint) }}"
+                       {% if item.is_active %}aria-current="page"{% endif %}>
+                        <i class="bi {{ item.icon }}" aria-hidden="true"></i>
+                        <span>{{ item.label }}</span>
+                    </a>
+                    {% else %}
+                    <span class="nav-link disabled" aria-disabled="true">
+                        <i class="bi {{ item.icon }}" aria-hidden="true"></i>
+                        <span>{{ item.label }}</span>
+                        <span class="badge app-badge-soon ms-auto">Day {{ item.day }}</span>
+                    </span>
+                    {% endif %}
+                </li>
+                {% endfor %}
+            </ul>
+        </nav>
+    </div>
+</aside>

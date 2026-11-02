@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard{% endblock %}
+{% block page_title %}Dashboard{% endblock %}
+
+{% block content %}
+<section class="mb-4">
+    <h2 class="h5 mb-1">Welcome to your assistant</h2>
+    <p class="text-body-secondary mb-0">Your tasks, reminders, notes and AI conversations will all appear here.</p>
+</section>
+
+{# Summary cards. Day 6 fills them with real numbers from the database. #}
+<section aria-label="Summary" class="row g-3 mb-4">
+    {% for card in summary_cards %}
+    <div class="col-12 col-sm-6 col-xl-3">
+        <div class="card app-card h-100">
+            <div class="card-body d-flex align-items-center gap-3">
+                <span class="app-card-icon" aria-hidden="true"><i class="bi {{ card.icon }}"></i></span>
+                <div>
+                    <p class="text-body-secondary small mb-1">{{ card.label }}</p>
+                    <p class="h4 mb-0">&ndash;</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</section>
+
+<div class="row g-3">
+    <section class="col-12 col-xl-8" aria-labelledby="upcoming-title">
+        <div class="card app-card h-100">
+            <div class="card-header bg-transparent">
+                <h2 class="h6 mb-0" id="upcoming-title">Upcoming tasks and reminders</h2>
+            </div>
+            <div class="card-body app-empty">
+                <i class="bi bi-calendar-check" aria-hidden="true"></i>
+                <p class="mb-0">Nothing scheduled yet. Tasks and reminders appear here once those modules are built.</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="col-12 col-xl-4" aria-labelledby="notes-title">
+        <div class="card app-card h-100">
+            <div class="card-header bg-transparent">
+                <h2 class="h6 mb-0" id="notes-title">Recent notes</h2>
+            </div>
+            <div class="card-body app-empty">
+                <i class="bi bi-journal" aria-hidden="true"></i>
+                <p class="mb-0">No notes yet.</p>
+            </div>
+        </div>
+    </section>
+</div>
+{% endblock %}

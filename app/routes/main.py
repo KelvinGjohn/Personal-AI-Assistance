@@ -5,8 +5,6 @@ A Blueprint is a group of related routes. Later days add more Blueprints
 (auth, tasks, reminders, notes, chat...) in this same folder.
 """
 
-from datetime import datetime
-
 from flask import Blueprint, current_app, jsonify, render_template
 from sqlalchemy import text
 
@@ -14,15 +12,19 @@ from app.extensions import db
 
 main_bp = Blueprint("main", __name__)
 
+# The dashboard's summary cards. Day 6 adds the real numbers from the database.
+SUMMARY_CARDS = [
+    {"label": "Tasks",         "icon": "bi-check2-square"},
+    {"label": "Reminders",     "icon": "bi-alarm"},
+    {"label": "Notes",         "icon": "bi-journal-text"},
+    {"label": "Conversations", "icon": "bi-chat-dots"},
+]
+
 
 @main_bp.route("/")
 def index():
-    """Home page. Becomes the real dashboard on Days 5-6."""
-    return render_template(
-        "index.html",
-        app_name=current_app.config["APP_NAME"],
-        year=datetime.now().year,
-    )
+    """The dashboard page (layout only today; connected to real data on Day 6)."""
+    return render_template("dashboard.html", summary_cards=SUMMARY_CARDS)
 
 
 @main_bp.route("/health")

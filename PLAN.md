@@ -10,7 +10,7 @@ One day at a time. A day is only marked done when its feature works and is teste
 | 3  | Project structure and first Flask app | Running Flask application | Done |
 | 4  | Database design | SQLAlchemy models and ER diagram | Done |
 | **Phase 2 — Core application** ||||
-| 5  | Frontend foundation | Base layout, sidebar, header (Bootstrap) | |
+| 5  | Frontend foundation | Base layout, sidebar, header (Bootstrap) | Done |
 | 6  | Dashboard | Dashboard showing real database data | |
 | 7  | Registration and login | Flask-Login authentication | |
 | 8  | Profile and settings | Edit profile, change password, preferences | |

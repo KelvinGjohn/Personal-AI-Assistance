@@ -1,21 +1,231 @@
-/* Basic styles for Day 3. Replaced by the Bootstrap layout on Day 5. */
+/*
+  Personal AI Assistant - custom styles on top of Bootstrap 5.
+  Colours are defined once as variables so the theme is easy to change.
+*/
+
+:root {
+    --app-sidebar-width: 260px;
+    --app-sidebar-bg: #1c1917;
+    --app-sidebar-text: #d6d3d1;
+    --app-sidebar-active: #ffffff;
+    --app-accent: #0f766e;
+    --app-accent-soft: #ccfbf1;
+    --app-bg: #f5f5f4;
+    --app-border: #e7e5e4;
+
+    /* Make Bootstrap's primary colour match our accent */
+    --bs-primary: #0f766e;
+    --bs-primary-rgb: 15, 118, 110;
+    --bs-link-color: #0f766e;
+    --bs-link-hover-color: #115e59;
+}
+
 body {
-    margin: 0;
-    font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
-    background: #fafaf9;
-    color: #1c1917;
+    background: var(--app-bg);
 }
 
-.container {
-    max-width: 720px;
-    margin: 0 auto;
-    padding: 48px 16px 0;
+.btn-primary {
+    --bs-btn-bg: var(--app-accent);
+    --bs-btn-border-color: var(--app-accent);
+    --bs-btn-hover-bg: #115e59;
+    --bs-btn-hover-border-color: #115e59;
+    --bs-btn-active-bg: #134e4a;
 }
 
-.muted {
+.skip-link {
+    position: absolute;
+    top: 8px;
+    left: 8px;
+    z-index: 2000;
+    padding: 8px 12px;
+    background: #fff;
+}
+
+/* ---------- Layout: sidebar on the left, main area on the right ---------- */
+.app-layout {
+    display: flex;
+    min-height: 100vh;
+}
+
+.app-main {
+    flex: 1;
+    min-width: 0; /* lets wide content shrink instead of overflowing */
+    display: flex;
+    flex-direction: column;
+}
+
+.app-content {
+    flex: 1;
+    padding: 24px;
+}
+
+.app-footer {
+    padding: 16px 24px;
+    font-size: 0.85rem;
     color: #57534e;
 }
 
-a {
-    color: #0f766e;
+/* ---------- Sidebar ---------- */
+.app-sidebar {
+    --bs-offcanvas-width: var(--app-sidebar-width);
+    --bs-offcanvas-bg: var(--app-sidebar-bg);
+    --bs-offcanvas-color: var(--app-sidebar-text);
+    background: var(--app-sidebar-bg);
+    color: var(--app-sidebar-text);
+}
+
+@media (min-width: 992px) {
+    .app-sidebar {
+        width: var(--app-sidebar-width);
+        flex-shrink: 0;
+        position: sticky;
+        top: 0;
+        height: 100vh;
+        display: flex;
+        flex-direction: column;
+        overflow-y: auto;
+        /* Bootstrap's offcanvas-lg forces a transparent background on large
+           screens with !important, so !important is needed to replace it. */
+        background-color: var(--app-sidebar-bg) !important;
+    }
+
+    /* offcanvas-lg also hides the header on large screens; we want the brand shown */
+    .app-sidebar .app-brand {
+        display: flex;
+    }
+}
+
+.app-brand {
+    padding: 20px;
+}
+
+.app-brand-link {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: #fff;
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.app-brand-mark {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    background: var(--app-accent);
+}
+
+.app-nav {
+    gap: 2px;
+    padding: 0 12px;
+}
+
+.app-nav .nav-link {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-height: 44px; /* comfortable touch target */
+    padding: 8px 12px;
+    border-radius: 8px;
+    color: var(--app-sidebar-text);
+}
+
+.app-nav .nav-link:hover {
+    background: rgba(255, 255, 255, 0.08);
+    color: var(--app-sidebar-active);
+}
+
+.app-nav .nav-link.active {
+    background: var(--app-accent);
+    color: var(--app-sidebar-active);
+}
+
+.app-nav .nav-link.disabled {
+    color: #a8a29e; /* still readable on the dark background */
+}
+
+.app-badge-soon {
+    background: rgba(255, 255, 255, 0.1);
+    color: #d6d3d1;
+    font-weight: 500;
+}
+
+/* ---------- Header ---------- */
+.app-header {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 16px 24px;
+    background: #fff;
+    border-bottom: 1px solid var(--app-border);
+}
+
+.app-header-title {
+    flex: 1;
+    min-width: 0;
+}
+
+.app-header-user {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.app-avatar {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: var(--app-accent-soft);
+    color: var(--app-accent);
+}
+
+/* ---------- Cards ---------- */
+.app-card {
+    border: 1px solid var(--app-border);
+    border-radius: 12px;
+}
+
+.app-card-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    border-radius: 10px;
+    background: var(--app-accent-soft);
+    color: var(--app-accent);
+    font-size: 1.25rem;
+}
+
+.app-empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    text-align: center;
+    color: #57534e;
+    min-height: 160px;
+}
+
+.app-empty > .bi {
+    font-size: 2rem;
+    color: #a8a29e;
+}
+
+/* ---------- Small screens ---------- */
+@media (max-width: 575.98px) {
+    .app-content {
+        padding: 16px;
+    }
+
+    .app-header {
+        padding: 12px 16px;
+    }
 }
