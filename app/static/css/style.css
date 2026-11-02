@@ -203,6 +203,35 @@ body {
     font-size: 1.25rem;
 }
 
+.app-min-0 {
+    min-width: 0; /* lets long titles wrap instead of pushing the badge out */
+}
+
+.app-text-overdue {
+    color: #b42318;
+    font-weight: 500;
+}
+
+.app-progress-bar {
+    background-color: var(--app-accent);
+}
+
+/* Priority badges. Each pair of colours has at least 4.5:1 contrast. */
+.app-priority-high {
+    background: #fee4e2;
+    color: #912018;
+}
+
+.app-priority-medium {
+    background: #ffedd5;
+    color: #9a3412;
+}
+
+.app-priority-low {
+    background: #e7e5e4;
+    color: #44403c;
+}
+
 .app-empty {
     display: flex;
     flex-direction: column;

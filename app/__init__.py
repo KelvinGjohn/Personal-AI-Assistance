@@ -60,10 +60,12 @@ def register_blueprints(app):
 
 
 def register_template_helpers(app):
-    """Make the sidebar and header data available to every template."""
+    """Make the sidebar and header data, and our filters, available to every template."""
     from app.navigation import inject_layout_data
+    from app.utils import datetime_short
 
     app.context_processor(inject_layout_data)
+    app.add_template_filter(datetime_short)
 
 
 def register_error_handlers(app):

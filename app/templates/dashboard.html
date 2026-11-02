@@ -4,12 +4,19 @@
 {% block page_title %}Dashboard{% endblock %}
 
 {% block content %}
-<section class="mb-4">
-    <h2 class="h5 mb-1">Welcome to your assistant</h2>
-    <p class="text-body-secondary mb-0">Your tasks, reminders, notes and AI conversations will all appear here.</p>
-</section>
+{# Temporary notice: removed on Day 7 when each user logs in and sees their own data #}
+{% if dashboard_user %}
+<div class="alert alert-info" role="status">
+    Development view: showing data for <strong>{{ dashboard_user.username }}</strong>. Login arrives on Day 7.
+</div>
+{% else %}
+<div class="alert alert-info" role="status">
+    The database has no users yet, so everything below is empty. To add sample data, run
+    <code>python scripts/seed_demo_data.py</code>.
+</div>
+{% endif %}
 
-{# Summary cards. Day 6 fills them with real numbers from the database. #}
+{# ----- Summary cards ----- #}
 <section aria-label="Summary" class="row g-3 mb-4">
     {% for card in summary_cards %}
     <div class="col-12 col-sm-6 col-xl-3">
@@ -18,7 +25,8 @@
                 <span class="app-card-icon" aria-hidden="true"><i class="bi {{ card.icon }}"></i></span>
                 <div>
                     <p class="text-body-secondary small mb-1">{{ card.label }}</p>
-                    <p class="h4 mb-0">&ndash;</p>
+                    <p class="h4 mb-0">{{ card.value }}</p>
+                    <p class="text-body-secondary small mb-0">{{ card.detail }}</p>
                 </div>
             </div>
         </div>
@@ -26,28 +34,113 @@
     {% endfor %}
 </section>
 
-<div class="row g-3">
-    <section class="col-12 col-xl-8" aria-labelledby="upcoming-title">
+<div class="row g-3 mb-3">
+    {# ----- Tasks due soon ----- #}
+    <section class="col-12 col-xl-6" aria-labelledby="tasks-title">
         <div class="card app-card h-100">
             <div class="card-header bg-transparent">
-                <h2 class="h6 mb-0" id="upcoming-title">Upcoming tasks and reminders</h2>
+                <h2 class="h6 mb-0" id="tasks-title">Tasks due soon</h2>
             </div>
+            {% if tasks_due_soon %}
+            <ul class="list-group list-group-flush">
+                {% for item in tasks_due_soon %}
+                <li class="list-group-item d-flex justify-content-between align-items-start gap-3">
+                    <div class="app-min-0">
+                        <div class="fw-medium text-break">{{ item.task.title }}</div>
+                        <div class="small {{ 'app-text-overdue' if item.is_overdue else 'text-body-secondary' }}">
+                            {% if item.is_overdue %}Overdue · {% endif %}{{ item.task.due_date | datetime_short }}
+                        </div>
+                    </div>
+                    <span class="badge app-priority-{{ item.task.priority }}">{{ item.task.priority | capitalize }}</span>
+                </li>
+                {% endfor %}
+            </ul>
+            {% else %}
             <div class="card-body app-empty">
-                <i class="bi bi-calendar-check" aria-hidden="true"></i>
-                <p class="mb-0">Nothing scheduled yet. Tasks and reminders appear here once those modules are built.</p>
+                <i class="bi bi-check2-circle" aria-hidden="true"></i>
+                <p class="mb-0">No tasks with a due date.</p>
+            </div>
+            {% endif %}
+        </div>
+    </section>
+
+    {# ----- Upcoming reminders ----- #}
+    <section class="col-12 col-xl-6" aria-labelledby="reminders-title">
+        <div class="card app-card h-100">
+            <div class="card-header bg-transparent">
+                <h2 class="h6 mb-0" id="reminders-title">Upcoming reminders</h2>
+            </div>
+            {% if upcoming_reminders %}
+            <ul class="list-group list-group-flush">
+                {% for reminder in upcoming_reminders %}
+                <li class="list-group-item">
+                    <div class="fw-medium text-break">{{ reminder.title }}</div>
+                    <div class="small text-body-secondary">{{ reminder.remind_at | datetime_short }}</div>
+                </li>
+                {% endfor %}
+            </ul>
+            {% else %}
+            <div class="card-body app-empty">
+                <i class="bi bi-alarm" aria-hidden="true"></i>
+                <p class="mb-0">No upcoming reminders.</p>
+            </div>
+            {% endif %}
+        </div>
+    </section>
+</div>
+
+<div class="row g-3">
+    {# ----- Productivity summary ----- #}
+    <section class="col-12 col-xl-4" aria-labelledby="productivity-title">
+        <div class="card app-card h-100">
+            <div class="card-header bg-transparent">
+                <h2 class="h6 mb-0" id="productivity-title">Productivity</h2>
+            </div>
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-baseline mb-2">
+                    <span>Tasks completed</span>
+                    <span class="h5 mb-0">{{ task_stats.completion_rate }}%</span>
+                </div>
+                <div class="progress mb-3" role="progressbar" aria-label="Tasks completed"
+                     aria-valuenow="{{ task_stats.completion_rate }}" aria-valuemin="0" aria-valuemax="100">
+                    <div class="progress-bar app-progress-bar" style="width: {{ task_stats.completion_rate }}%"></div>
+                </div>
+                <dl class="row small mb-0">
+                    <dt class="col-8 fw-normal text-body-secondary">Completed in total</dt>
+                    <dd class="col-4 text-end mb-1">{{ task_stats.completed }} of {{ task_stats.total }}</dd>
+                    <dt class="col-8 fw-normal text-body-secondary">Completed in the last 7 days</dt>
+                    <dd class="col-4 text-end mb-1">{{ task_stats.completed_this_week }}</dd>
+                    <dt class="col-8 fw-normal text-body-secondary">Overdue</dt>
+                    <dd class="col-4 text-end mb-0">{{ task_stats.overdue }}</dd>
+                </dl>
             </div>
         </div>
     </section>
 
-    <section class="col-12 col-xl-4" aria-labelledby="notes-title">
+    {# ----- Recent notes ----- #}
+    <section class="col-12 col-xl-8" aria-labelledby="notes-title">
         <div class="card app-card h-100">
             <div class="card-header bg-transparent">
                 <h2 class="h6 mb-0" id="notes-title">Recent notes</h2>
             </div>
+            {% if recent_notes %}
+            <ul class="list-group list-group-flush">
+                {% for note in recent_notes %}
+                <li class="list-group-item">
+                    <div class="d-flex justify-content-between align-items-start gap-3">
+                        <div class="fw-medium text-break">{{ note.title }}</div>
+                        {% if note.category %}<span class="badge text-bg-light border">{{ note.category }}</span>{% endif %}
+                    </div>
+                    <div class="small text-body-secondary text-break">{{ note.content | truncate(100) }}</div>
+                </li>
+                {% endfor %}
+            </ul>
+            {% else %}
             <div class="card-body app-empty">
                 <i class="bi bi-journal" aria-hidden="true"></i>
                 <p class="mb-0">No notes yet.</p>
             </div>
+            {% endif %}
         </div>
     </section>
 </div>

@@ -11,3 +11,15 @@ def utc_now():
     They are converted to the user's own time zone only when displayed (Day 8).
     """
     return datetime.now(timezone.utc).replace(tzinfo=None)
+
+
+def datetime_short(value):
+    """
+    Template filter: 2026-11-03 14:30 becomes "Tue 03 Nov 2026, 14:30 UTC".
+
+    It says UTC so the time is never misleading. Day 8 converts it to the
+    user's own time zone.
+    """
+    if value is None:
+        return ""
+    return value.strftime("%a %d %b %Y, %H:%M UTC")
