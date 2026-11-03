@@ -5,7 +5,7 @@ import re
 import pytest
 
 from app.models import Note, User
-from app.routes.auth import is_safe_redirect
+from app.utils import is_safe_redirect
 from tests.conftest import TEST_PASSWORD
 
 
@@ -40,8 +40,11 @@ def test_password_is_stored_only_as_a_hash(client):
     assert not user.check_password("wrong-password")
 
 
-def test_same_password_gives_different_hashes_because_of_salt(make_user):
-    assert make_user("a").password_hash != make_user("b").password_hash
+def test_same_password_gives_different_hashes_because_of_salt():
+    first, second = User(), User()
+    first.set_password(TEST_PASSWORD)
+    second.set_password(TEST_PASSWORD)
+    assert first.password_hash != second.password_hash
 
 
 @pytest.mark.parametrize("overrides, message", [

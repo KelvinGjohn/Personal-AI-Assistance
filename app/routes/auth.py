@@ -1,7 +1,5 @@
 """Authentication routes: register, log in and log out."""
 
-from urllib.parse import urlsplit
-
 from flask import Blueprint, flash, redirect, render_template, request, url_for
 from flask_login import current_user, login_required, login_user, logout_user
 from sqlalchemy import func, or_
@@ -10,22 +8,9 @@ from sqlalchemy.exc import IntegrityError
 from app.extensions import db
 from app.forms.auth_forms import LoginForm, RegistrationForm
 from app.models import User
+from app.utils import is_safe_redirect
 
 auth_bp = Blueprint("auth", __name__)
-
-
-def is_safe_redirect(target):
-    """
-    Only allow redirects to pages on this site.
-
-    The "next" address comes from the URL, so an attacker could send someone a
-    login link with next=https://evil.example. Without this check, the user
-    would land on the attacker's site right after logging in.
-    """
-    if not target or not target.startswith("/") or target.startswith("//") or "\\" in target:
-        return False
-    parts = urlsplit(target)
-    return not parts.scheme and not parts.netloc
 
 
 @auth_bp.route("/register", methods=["GET", "POST"])

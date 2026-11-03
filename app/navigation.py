@@ -31,7 +31,8 @@ def build_nav_items():
         items.append({
             **item,
             "is_available": item["endpoint"] in current_app.view_functions,
-            "is_active": request.endpoint == item["endpoint"],
+            # Every page in a Blueprint (such as /tasks/new) highlights its menu item
+            "is_active": request.blueprint == item["endpoint"].split(".")[0],
         })
     return items
 

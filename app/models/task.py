@@ -29,5 +29,10 @@ class Task(db.Model):
         db.CheckConstraint("priority IN ('low', 'medium', 'high')", name="ck_task_priority"),
     )
 
+    @property
+    def is_overdue(self):
+        """Not finished, and the due date has already passed."""
+        return bool(not self.is_completed and self.due_date and self.due_date < utc_now())
+
     def __repr__(self):
         return f"<Task {self.id} {self.title!r}>"

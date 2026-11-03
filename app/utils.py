@@ -1,6 +1,7 @@
 """Small helper functions used in several places."""
 
 from datetime import datetime, timezone
+from urllib.parse import urlsplit
 from zoneinfo import ZoneInfo, ZoneInfoNotFoundError, available_timezones
 
 from flask_login import current_user
@@ -38,6 +39,31 @@ def get_user_timezone():
 def to_user_time(value):
     """Convert a time stored in UTC to the user's own time zone."""
     return value.replace(tzinfo=timezone.utc).astimezone(get_user_timezone())
+
+
+def user_time_to_utc(value):
+    """Convert a time typed into a form (in the user's zone) to UTC for saving."""
+    local_time = value.replace(tzinfo=get_user_timezone())
+    return local_time.astimezone(timezone.utc).replace(tzinfo=None)
+
+
+def utc_to_user_input(value):
+    """Convert a stored UTC time to the user's zone, ready to fill in a form field."""
+    return to_user_time(value).replace(tzinfo=None)
+
+
+def is_safe_redirect(target):
+    """
+    Only allow redirects to pages on this site.
+
+    The address comes from the browser, so an attacker could send someone a
+    link with next=https://evil.example. Without this check, the user would
+    land on the attacker's site.
+    """
+    if not target or not target.startswith("/") or target.startswith("//") or "\\" in target:
+        return False
+    parts = urlsplit(target)
+    return not parts.scheme and not parts.netloc
 
 
 def datetime_short(value):

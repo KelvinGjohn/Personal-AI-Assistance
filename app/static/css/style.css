@@ -269,6 +269,48 @@ body {
     color: #44403c;
 }
 
+/* ---------- Task list ---------- */
+.app-task {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+}
+
+.app-task-body {
+    flex: 1;
+    min-width: 0; /* lets long titles wrap instead of pushing the buttons out */
+    padding-top: 8px;
+}
+
+.app-task-actions {
+    display: flex;
+    flex-shrink: 0;
+}
+
+.app-task-done {
+    text-decoration: line-through;
+    color: #57534e;
+}
+
+.app-task-check-done {
+    color: var(--app-accent);
+}
+
+.app-icon-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    padding: 0;
+    border: 0;
+    font-size: 1.15rem;
+}
+
+.app-form-card {
+    max-width: 640px;
+}
+
 .app-empty {
     display: flex;
     flex-direction: column;

@@ -31,8 +31,9 @@
     {# ----- Tasks due soon ----- #}
     <section class="col-12 col-xl-6" aria-labelledby="tasks-title">
         <div class="card app-card h-100">
-            <div class="card-header bg-transparent">
+            <div class="card-header bg-transparent d-flex justify-content-between align-items-center">
                 <h2 class="h6 mb-0" id="tasks-title">Tasks due soon</h2>
+                <a class="small" href="{{ url_for('tasks.index') }}">View all tasks</a>
             </div>
             {% if tasks_due_soon %}
             <ul class="list-group list-group-flush">

@@ -1,0 +1,123 @@
+{% extends "base.html" %}
+
+{% block title %}Tasks{% endblock %}
+{% block page_title %}Tasks{% endblock %}
+
+{% block content %}
+{# The current address, so that completing a task returns to the same filtered list #}
+{% set current_list = request.full_path.rstrip("?") %}
+
+<div class="d-flex justify-content-between align-items-center gap-3 mb-3">
+    <p class="text-body-secondary mb-0" role="status">
+        {{ pagination.total }} task{{ "" if pagination.total == 1 else "s" }}{% if filters %} {{ "matches" if pagination.total == 1 else "match" }} your filters{% endif %}
+    </p>
+    <a class="btn btn-primary" href="{{ url_for('tasks.new') }}">
+        <i class="bi bi-plus-lg" aria-hidden="true"></i> New task
+    </a>
+</div>
+
+{# Filters use GET, so a filtered list has its own address and can be refreshed #}
+<form method="get" class="card app-card mb-3" aria-label="Filter tasks">
+    <div class="card-body row g-2 align-items-end">
+        <div class="col-12 col-sm-6 col-lg-3">
+            <label class="form-label small mb-1" for="status">Status</label>
+            <select class="form-select" id="status" name="status">
+                <option value="">All</option>
+                {% for status in statuses %}
+                <option value="{{ status }}" {% if filters.status == status %}selected{% endif %}>{{ status | capitalize }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="col-12 col-sm-6 col-lg-3">
+            <label class="form-label small mb-1" for="priority">Priority</label>
+            <select class="form-select" id="priority" name="priority">
+                <option value="">All</option>
+                {% for priority in priorities %}
+                <option value="{{ priority }}" {% if filters.priority == priority %}selected{% endif %}>{{ priority | capitalize }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="col-12 col-sm-6 col-lg-3">
+            <label class="form-label small mb-1" for="category">Category</label>
+            <select class="form-select" id="category" name="category">
+                <option value="">All</option>
+                {% for category in categories %}
+                <option value="{{ category }}" {% if filters.category == category %}selected{% endif %}>{{ category }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="col-12 col-sm-6 col-lg-3 d-flex gap-2">
+            <button class="btn btn-outline-secondary flex-fill" type="submit">Apply</button>
+            {% if filters %}<a class="btn btn-link" href="{{ url_for('tasks.index') }}">Clear</a>{% endif %}
+        </div>
+    </div>
+</form>
+
+<section class="card app-card" aria-label="Task list">
+    {% if pagination.items %}
+    <ul class="list-group list-group-flush">
+        {% for task in pagination.items %}
+        <li class="list-group-item app-task">
+            <form method="post" action="{{ url_for('tasks.reopen' if task.is_completed else 'tasks.complete', task_id=task.id) }}">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <input type="hidden" name="next" value="{{ current_list }}">
+                <button class="btn app-icon-button" type="submit"
+                        aria-label="{{ 'Mark as not finished' if task.is_completed else 'Mark as finished' }}: {{ task.title }}">
+                    <i class="bi {{ 'bi-check-circle-fill app-task-check-done' if task.is_completed else 'bi-circle' }}" aria-hidden="true"></i>
+                </button>
+            </form>
+
+            <div class="app-task-body">
+                <div class="fw-medium text-break {{ 'app-task-done' if task.is_completed }}">{{ task.title }}</div>
+                {% if task.description %}
+                <div class="small text-body-secondary text-break">{{ task.description | truncate(120) }}</div>
+                {% endif %}
+                <div class="small mt-1 d-flex flex-wrap align-items-center gap-2">
+                    <span class="badge app-priority-{{ task.priority }}">{{ task.priority | capitalize }}</span>
+                    {% if task.category %}<span class="badge text-bg-light border">{{ task.category }}</span>{% endif %}
+                    {% if task.due_date %}
+                    <span class="{{ 'app-text-overdue' if task.is_overdue else 'text-body-secondary' }}">
+                        {% if task.is_overdue %}Overdue · {% endif %}{{ task.due_date | datetime_short }}
+                    </span>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="app-task-actions">
+                <a class="btn app-icon-button" href="{{ url_for('tasks.edit', task_id=task.id) }}" aria-label="Edit: {{ task.title }}">
+                    <i class="bi bi-pencil" aria-hidden="true"></i>
+                </a>
+                <a class="btn app-icon-button" href="{{ url_for('tasks.delete', task_id=task.id) }}" aria-label="Delete: {{ task.title }}">
+                    <i class="bi bi-trash" aria-hidden="true"></i>
+                </a>
+            </div>
+        </li>
+        {% endfor %}
+    </ul>
+    {% elif filters %}
+    <div class="card-body app-empty">
+        <i class="bi bi-funnel" aria-hidden="true"></i>
+        <p class="mb-0">No tasks match these filters.</p>
+        <a href="{{ url_for('tasks.index') }}">Show all tasks</a>
+    </div>
+    {% else %}
+    <div class="card-body app-empty">
+        <i class="bi bi-check2-square" aria-hidden="true"></i>
+        <p class="mb-0">You have no tasks yet.</p>
+        <a href="{{ url_for('tasks.new') }}">Create your first task</a>
+    </div>
+    {% endif %}
+</section>
+
+{% if pagination.pages > 1 %}
+<nav class="d-flex justify-content-between align-items-center mt-3" aria-label="Pages">
+    {% if pagination.has_prev %}
+    <a class="btn btn-outline-secondary" href="{{ url_for('tasks.index', page=pagination.prev_num, **filters) }}">Previous</a>
+    {% else %}<span></span>{% endif %}
+    <span class="small text-body-secondary">Page {{ pagination.page }} of {{ pagination.pages }}</span>
+    {% if pagination.has_next %}
+    <a class="btn btn-outline-secondary" href="{{ url_for('tasks.index', page=pagination.next_num, **filters) }}">Next</a>
+    {% else %}<span></span>{% endif %}
+</nav>
+{% endif %}
+{% endblock %}
