@@ -6,7 +6,8 @@ from datetime import datetime, timedelta
 import pytest
 
 from app.models import Task, User
-from app.services.task_service import TASKS_PER_PAGE, build_task_query, get_user_categories
+from app.services.common import ITEMS_PER_PAGE
+from app.services.task_service import build_task_query, get_user_categories
 from app.utils import utc_now
 
 
@@ -306,16 +307,16 @@ def test_categories_are_unique_and_sorted(db, auth_client):
 def test_long_lists_are_split_into_pages_and_keep_filters(db, auth_client):
     user = get_tester()
     db.session.add_all([Task(user=user, title=f"Task {n}", priority="low")
-                        for n in range(TASKS_PER_PAGE + 1)])
+                        for n in range(ITEMS_PER_PAGE + 1)])
     db.session.commit()
 
     html = page(auth_client, "/tasks?priority=low")
-    assert html.count('class="list-group-item app-task"') == TASKS_PER_PAGE
+    assert html.count('class="list-group-item app-item"') == ITEMS_PER_PAGE
     assert "Page 1 of 2" in html
     assert "/tasks?page=2&amp;priority=low" in html or "/tasks?priority=low&amp;page=2" in html
 
     html = page(auth_client, "/tasks?priority=low&page=2")
-    assert html.count('class="list-group-item app-task"') == 1
+    assert html.count('class="list-group-item app-item"') == 1
 
 
 @pytest.mark.parametrize("number", ["0", "-5", "999", "99999999999999999999999", "abc"])

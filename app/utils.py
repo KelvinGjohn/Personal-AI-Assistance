@@ -4,6 +4,7 @@ from datetime import datetime, timezone
 from urllib.parse import urlsplit
 from zoneinfo import ZoneInfo, ZoneInfoNotFoundError, available_timezones
 
+from flask import redirect, request
 from flask_login import current_user
 
 # Only real places, which leaves out old aliases such as "US/Eastern"
@@ -52,6 +53,11 @@ def utc_to_user_input(value):
     return to_user_time(value).replace(tzinfo=None)
 
 
+def whole_minute(value):
+    """Drop the seconds. Date fields in forms only hold whole minutes."""
+    return value.replace(second=0, microsecond=0)
+
+
 def is_safe_redirect(target):
     """
     Only allow redirects to pages on this site.
@@ -64,6 +70,12 @@ def is_safe_redirect(target):
         return False
     parts = urlsplit(target)
     return not parts.scheme and not parts.netloc
+
+
+def redirect_back(fallback_url):
+    """After a button press, return to the list it came from, so filters are kept."""
+    next_page = request.form.get("next")
+    return redirect(next_page if is_safe_redirect(next_page) else fallback_url)
 
 
 def datetime_short(value):

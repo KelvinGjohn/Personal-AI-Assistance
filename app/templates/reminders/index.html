@@ -1,0 +1,92 @@
+{% extends "base.html" %}
+{% from "partials/pagination.html" import render_pagination %}
+
+{% block title %}Reminders{% endblock %}
+{% block page_title %}Reminders{% endblock %}
+
+{% block content %}
+{# The current address, so that dismissing a reminder returns to the same list #}
+{% set current_list = request.full_path.rstrip("?") %}
+
+<div class="d-flex justify-content-between align-items-center gap-3 mb-3">
+    <p class="text-body-secondary mb-0" role="status">
+        {{ pagination.total }} reminder{{ "" if pagination.total == 1 else "s" }}
+    </p>
+    <a class="btn btn-primary" href="{{ url_for('reminders.new') }}">
+        <i class="bi bi-plus-lg" aria-hidden="true"></i> New reminder
+    </a>
+</div>
+
+<nav class="nav nav-pills app-pills mb-3" aria-label="Filter reminders">
+    <a class="nav-link {% if not filters %}active{% endif %}"
+       {% if not filters %}aria-current="page"{% endif %}
+       href="{{ url_for('reminders.index') }}">All</a>
+    {% for status in statuses %}
+    <a class="nav-link {% if filters.status == status %}active{% endif %}"
+       {% if filters.status == status %}aria-current="page"{% endif %}
+       href="{{ url_for('reminders.index', status=status) }}">
+        {{ status | capitalize }}{% if status == "due" and due_count %} ({{ due_count }}){% endif %}
+    </a>
+    {% endfor %}
+</nav>
+
+<section class="card app-card" aria-label="Reminder list">
+    {% if pagination.items %}
+    <ul class="list-group list-group-flush">
+        {% for reminder in pagination.items %}
+        <li class="list-group-item app-item">
+            <div class="app-item-body">
+                <div class="fw-medium text-break">{{ reminder.title }}</div>
+                {% if reminder.description %}
+                <div class="small text-body-secondary text-break">{{ reminder.description | truncate(120) }}</div>
+                {% endif %}
+                <div class="small mt-1 d-flex flex-wrap align-items-center gap-2">
+                    <span class="badge app-status-{{ reminder.status }}">{{ reminder.status | capitalize }}</span>
+                    <span class="{{ 'app-text-overdue' if reminder.status == 'due' else 'text-body-secondary' }}">{{ reminder.remind_at | datetime_short }}</span>
+                </div>
+                {% if reminder.status == "due" %}
+                <div class="d-flex flex-wrap gap-2 mt-2">
+                    <form method="post" action="{{ url_for('reminders.dismiss', reminder_id=reminder.id) }}">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                        <input type="hidden" name="next" value="{{ current_list }}">
+                        <button class="btn btn-outline-secondary app-touch" type="submit"
+                                aria-label="Dismiss: {{ reminder.title }}">Dismiss</button>
+                    </form>
+                    <form method="post" action="{{ url_for('reminders.snooze', reminder_id=reminder.id) }}">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                        <input type="hidden" name="next" value="{{ current_list }}">
+                        <button class="btn btn-outline-secondary app-touch" type="submit"
+                                aria-label="Snooze for 1 hour: {{ reminder.title }}">Snooze 1 hour</button>
+                    </form>
+                </div>
+                {% endif %}
+            </div>
+
+            <div class="app-item-actions">
+                <a class="btn app-icon-button" href="{{ url_for('reminders.edit', reminder_id=reminder.id) }}" aria-label="Edit: {{ reminder.title }}">
+                    <i class="bi bi-pencil" aria-hidden="true"></i>
+                </a>
+                <a class="btn app-icon-button" href="{{ url_for('reminders.delete', reminder_id=reminder.id) }}" aria-label="Delete: {{ reminder.title }}">
+                    <i class="bi bi-trash" aria-hidden="true"></i>
+                </a>
+            </div>
+        </li>
+        {% endfor %}
+    </ul>
+    {% elif filters %}
+    <div class="card-body app-empty">
+        <i class="bi bi-alarm" aria-hidden="true"></i>
+        <p class="mb-0">No {{ filters.status }} reminders.</p>
+        <a href="{{ url_for('reminders.index') }}">Show all reminders</a>
+    </div>
+    {% else %}
+    <div class="card-body app-empty">
+        <i class="bi bi-alarm" aria-hidden="true"></i>
+        <p class="mb-0">You have no reminders yet.</p>
+        <a href="{{ url_for('reminders.new') }}">Create your first reminder</a>
+    </div>
+    {% endif %}
+</section>
+
+{{ render_pagination(pagination, "reminders.index", filters) }}
+{% endblock %}

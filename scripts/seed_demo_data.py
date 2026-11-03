@@ -62,7 +62,7 @@ def seed_demo_data():
         Reminder(title="Team meeting", remind_at=now + timedelta(hours=5)),
         Reminder(title="Call the dentist", remind_at=now + timedelta(days=1)),
         Reminder(title="Pay the phone bill", remind_at=now + timedelta(days=4)),
-        Reminder(title="Old reminder (already passed)", remind_at=now - timedelta(days=3)),
+        Reminder(title="Return library books", remind_at=now - timedelta(days=3)),  # shows as due
     ]
     user.notes = [
         Note(title="Flask application factory", category="Study",

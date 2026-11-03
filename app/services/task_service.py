@@ -4,27 +4,16 @@ Task service: finding, filtering and completing tasks.
 Every lookup includes user_id, so one user can never reach another user's tasks.
 """
 
-from flask import abort
-
 from app.extensions import db
 from app.models import Task
+from app.services.common import get_owned_or_404
 from app.utils import utc_now
 
-TASKS_PER_PAGE = 20
 STATUSES = ("pending", "overdue", "completed")
-MAX_DATABASE_ID = 2 ** 63 - 1  # Larger numbers can't be sent to SQLite at all
 
 
 def get_user_task_or_404(user_id, task_id):
-    """
-    Return the task only if it belongs to this user.
-
-    Another user's task gets the same 404 as a task that doesn't exist, so
-    nobody can find out which task ids are in use.
-    """
-    if task_id > MAX_DATABASE_ID:
-        abort(404)
-    return Task.query.filter_by(id=task_id, user_id=user_id).first_or_404()
+    return get_owned_or_404(Task, user_id, task_id)
 
 
 def get_user_categories(user_id):
@@ -67,14 +56,6 @@ def build_task_query(user_id, status=None, priority=None, category=None):
         Task.created_at.desc(),
         Task.id.desc(),
     )
-
-
-def get_tasks_page(query, page):
-    """One page of results. A page number that is too low or too high is corrected."""
-    total = query.count()
-    last_page = max((total + TASKS_PER_PAGE - 1) // TASKS_PER_PAGE, 1)
-    page = min(max(page, 1), last_page)
-    return query.paginate(page=page, per_page=TASKS_PER_PAGE, error_out=False)
 
 
 def set_task_completed(task, completed):

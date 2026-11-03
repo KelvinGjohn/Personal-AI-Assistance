@@ -13,11 +13,19 @@ class Reminder(db.Model):
     title = db.Column(db.String(200), nullable=False)
     description = db.Column(db.Text)
     remind_at = db.Column(db.DateTime, nullable=False, index=True)  # stored in UTC
-    # is_notified becomes True once a notification has been created (Day 19)
+    # True once the user has been told: they dismissed it, or a notification
+    # was created for it (Day 19). Setting a new time makes it False again.
     is_notified = db.Column(db.Boolean, nullable=False, default=False)
     created_at = db.Column(db.DateTime, nullable=False, default=utc_now)
 
     user = db.relationship("User", back_populates="reminders")
+
+    @property
+    def status(self):
+        """upcoming: still to come. due: waiting for the user. past: dismissed."""
+        if self.remind_at > utc_now():
+            return "upcoming"
+        return "past" if self.is_notified else "due"
 
     def __repr__(self):
         return f"<Reminder {self.id} {self.title!r} at {self.remind_at}>"

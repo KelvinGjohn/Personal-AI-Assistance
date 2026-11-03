@@ -270,29 +270,29 @@ body {
 }
 
 /* ---------- Task list ---------- */
-.app-task {
+.app-item {
     display: flex;
     align-items: flex-start;
     gap: 8px;
 }
 
-.app-task-body {
+.app-item-body {
     flex: 1;
     min-width: 0; /* lets long titles wrap instead of pushing the buttons out */
     padding-top: 8px;
 }
 
-.app-task-actions {
+.app-item-actions {
     display: flex;
     flex-shrink: 0;
 }
 
-.app-task-done {
+.app-item-done {
     text-decoration: line-through;
     color: #57534e;
 }
 
-.app-task-check-done {
+.app-item-check-done {
     color: var(--app-accent);
 }
 
@@ -305,6 +305,38 @@ body {
     padding: 0;
     border: 0;
     font-size: 1.15rem;
+}
+
+.app-touch {
+    min-height: 44px; /* comfortable touch target */
+}
+
+/* Reminder status badges. Each pair of colours has at least 4.5:1 contrast. */
+.app-status-due {
+    background: #fee4e2;
+    color: #912018;
+}
+
+.app-status-upcoming {
+    background: var(--app-accent-soft);
+    color: #134e4a;
+}
+
+.app-status-past {
+    background: #e7e5e4;
+    color: #44403c;
+}
+
+/* Bootstrap's pills have a fixed blue, so the active one is set to our accent */
+.app-pills {
+    --bs-nav-pills-link-active-bg: var(--app-accent);
+    gap: 4px;
+}
+
+.app-pills .nav-link {
+    display: flex;
+    align-items: center;
+    min-height: 44px;
 }
 
 .app-form-card {

@@ -7,15 +7,15 @@ from app.extensions import db
 from app.forms.task_forms import TaskForm
 from app.models import Task
 from app.models.task import PRIORITIES
+from app.services.common import paginate_query
 from app.services.task_service import (
     STATUSES,
     build_task_query,
-    get_tasks_page,
     get_user_categories,
     get_user_task_or_404,
     set_task_completed,
 )
-from app.utils import is_safe_redirect, user_time_to_utc, utc_to_user_input
+from app.utils import redirect_back, user_time_to_utc, utc_to_user_input
 
 tasks_bp = Blueprint("tasks", __name__, url_prefix="/tasks")
 
@@ -41,18 +41,12 @@ def apply_form_to_task(form, task):
     task.due_date = user_time_to_utc(form.due_date.data) if form.due_date.data else None
 
 
-def redirect_back():
-    """Return to the list the user came from, so their filters are kept."""
-    next_page = request.form.get("next")
-    return redirect(next_page if is_safe_redirect(next_page) else url_for("tasks.index"))
-
-
 @tasks_bp.route("")
 @login_required
 def index():
     filters = read_filters()
     query = build_task_query(current_user.id, **filters)
-    pagination = get_tasks_page(query, request.args.get("page", 1, type=int))
+    pagination = paginate_query(query, request.args.get("page", 1, type=int))
     return render_template(
         "tasks/index.html",
         pagination=pagination,
@@ -104,7 +98,7 @@ def edit(task_id):
 def complete(task_id):
     set_task_completed(get_user_task_or_404(current_user.id, task_id), True)
     db.session.commit()
-    return redirect_back()
+    return redirect_back(url_for("tasks.index"))
 
 
 @tasks_bp.route("/<int:task_id>/reopen", methods=["POST"])
@@ -112,7 +106,7 @@ def complete(task_id):
 def reopen(task_id):
     set_task_completed(get_user_task_or_404(current_user.id, task_id), False)
     db.session.commit()
-    return redirect_back()
+    return redirect_back(url_for("tasks.index"))
 
 
 @tasks_bp.route("/<int:task_id>/delete", methods=["GET", "POST"])

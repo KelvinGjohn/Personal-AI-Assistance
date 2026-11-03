@@ -9,6 +9,7 @@ dashboard can never include another user's data.
 from datetime import timedelta
 
 from app.models import Conversation, Note, Reminder, Task
+from app.services.reminder_service import count_due_reminders
 from app.utils import utc_now
 
 LIST_LIMIT = 5  # How many items each dashboard panel shows
@@ -57,7 +58,7 @@ def get_upcoming_reminders(user_id, now, limit=LIST_LIMIT):
     """Reminders that are still in the future, soonest first."""
     return (
         Reminder.query.filter_by(user_id=user_id)
-        .filter(Reminder.remind_at >= now)
+        .filter(Reminder.remind_at > now)
         .order_by(Reminder.remind_at)
         .limit(limit)
         .all()
@@ -115,13 +116,14 @@ def get_dashboard_data(user_id, now=None):
 
     task_stats = get_task_stats(user_id, now)
     upcoming_reminder_count = (
-        Reminder.query.filter_by(user_id=user_id).filter(Reminder.remind_at >= now).count()
+        Reminder.query.filter_by(user_id=user_id).filter(Reminder.remind_at > now).count()
     )
     note_count = Note.query.filter_by(user_id=user_id).count()
     conversation_count = Conversation.query.filter_by(user_id=user_id).count()
 
     return {
         "task_stats": task_stats,
+        "due_reminder_count": count_due_reminders(user_id, now),
         "summary_cards": build_summary_cards(
             task_stats, upcoming_reminder_count, note_count, conversation_count
         ),

@@ -9,6 +9,16 @@
     <p class="text-body-secondary mb-0">Here is what's happening with your tasks, reminders and notes.</p>
 </section>
 
+{% if due_reminder_count %}
+<div class="alert alert-warning d-flex flex-wrap justify-content-between align-items-center gap-2" role="status">
+    <span>
+        <i class="bi bi-alarm" aria-hidden="true"></i>
+        You have {{ due_reminder_count }} reminder{{ "" if due_reminder_count == 1 else "s" }} due.
+    </span>
+    <a class="alert-link" href="{{ url_for('reminders.index', status='due') }}">View due reminders</a>
+</div>
+{% endif %}
+
 {# ----- Summary cards ----- #}
 <section aria-label="Summary" class="row g-3 mb-4">
     {% for card in summary_cards %}
@@ -61,8 +71,9 @@
     {# ----- Upcoming reminders ----- #}
     <section class="col-12 col-xl-6" aria-labelledby="reminders-title">
         <div class="card app-card h-100">
-            <div class="card-header bg-transparent">
+            <div class="card-header bg-transparent d-flex justify-content-between align-items-center">
                 <h2 class="h6 mb-0" id="reminders-title">Upcoming reminders</h2>
+                <a class="small" href="{{ url_for('reminders.index') }}">View all reminders</a>
             </div>
             {% if upcoming_reminders %}
             <ul class="list-group list-group-flush">

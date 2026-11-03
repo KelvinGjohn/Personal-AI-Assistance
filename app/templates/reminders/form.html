@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% from "partials/form_field.html" import render_field %}
+
+{% block title %}{{ heading }}{% endblock %}
+{% block page_title %}{{ heading }}{% endblock %}
+
+{% block content %}
+<div class="card app-card app-form-card">
+    <div class="card-body">
+        <form method="post" novalidate>
+            {{ form.hidden_tag() }}
+            {{ render_field(form.title, autofocus=true, maxlength=200) }}
+            {{ render_field(form.description, rows=3) }}
+            {{ render_field(form.remind_at, help_text="In your time zone: " ~ current_user.timezone) }}
+            <div class="d-flex gap-2">
+                {{ form.submit(class="btn btn-primary") }}
+                <a class="btn btn-outline-secondary" href="{{ url_for('reminders.index') }}">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

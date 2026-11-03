@@ -18,6 +18,12 @@ MIN_YEAR = 2000
 MAX_YEAR = 2100
 
 
+def check_year_range(field):
+    """Stops extreme dates such as year 1, which can't be converted between time zones."""
+    if field.data and not MIN_YEAR <= field.data.year <= MAX_YEAR:
+        raise ValidationError(f"Enter a date between {MIN_YEAR} and {MAX_YEAR}.")
+
+
 class TaskForm(FlaskForm):
     title = StringField("Title", filters=[clean_text], validators=[
         DataRequired(message="Enter a title."),
@@ -36,6 +42,4 @@ class TaskForm(FlaskForm):
     submit = SubmitField("Save task")
 
     def validate_due_date(self, field):
-        # Also stops extreme dates such as year 1, which can't be converted between time zones
-        if field.data and not MIN_YEAR <= field.data.year <= MAX_YEAR:
-            raise ValidationError(f"Enter a date between {MIN_YEAR} and {MAX_YEAR}.")
+        check_year_range(field)

@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+
+{% block title %}Delete reminder{% endblock %}
+{% block page_title %}Delete reminder{% endblock %}
+
+{% block content %}
+<div class="card app-card app-form-card">
+    <div class="card-body">
+        <p class="fw-medium text-break">Delete "{{ reminder.title }}"?</p>
+        <p class="text-body-secondary">This can't be undone.</p>
+        <form method="post" class="d-flex gap-2">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <button class="btn btn-danger" type="submit">Delete reminder</button>
+            <a class="btn btn-outline-secondary" href="{{ url_for('reminders.index') }}">Cancel</a>
+        </form>
+    </div>
+</div>
+{% endblock %}
