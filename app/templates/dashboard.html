@@ -125,15 +125,16 @@
     {# ----- Recent notes ----- #}
     <section class="col-12 col-xl-8" aria-labelledby="notes-title">
         <div class="card app-card h-100">
-            <div class="card-header bg-transparent">
+            <div class="card-header bg-transparent d-flex justify-content-between align-items-center">
                 <h2 class="h6 mb-0" id="notes-title">Recent notes</h2>
+                <a class="small" href="{{ url_for('notes.index') }}">View all notes</a>
             </div>
             {% if recent_notes %}
             <ul class="list-group list-group-flush">
                 {% for note in recent_notes %}
                 <li class="list-group-item">
                     <div class="d-flex justify-content-between align-items-start gap-3">
-                        <div class="fw-medium text-break">{{ note.title }}</div>
+                        <a class="fw-medium text-break" href="{{ url_for('notes.view', note_id=note.id) }}">{{ note.title }}</a>
                         {% if note.category %}<span class="badge text-bg-light border">{{ note.category }}</span>{% endif %}
                     </div>
                     <div class="small text-body-secondary text-break">{{ note.content | truncate(100) }}</div>

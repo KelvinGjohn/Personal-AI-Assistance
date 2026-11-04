@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+{% from "partials/pagination.html" import render_pagination %}
+
+{% block title %}Notes{% endblock %}
+{% block page_title %}Notes{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center gap-3 mb-3">
+    <p class="text-body-secondary mb-0" role="status">
+        {{ pagination.total }} note{{ "" if pagination.total == 1 else "s" }}{% if filters %} {{ "matches" if pagination.total == 1 else "match" }}{% endif %}
+    </p>
+    <a class="btn btn-primary" href="{{ url_for('notes.new') }}">
+        <i class="bi bi-plus-lg" aria-hidden="true"></i> New note
+    </a>
+</div>
+
+{# Search uses GET, so a search has its own address and can be refreshed #}
+<form method="get" role="search" class="card app-card mb-3" aria-label="Search notes">
+    <div class="card-body row g-2 align-items-end">
+        <div class="col-12 col-lg-6">
+            <label class="form-label small mb-1" for="q">Search</label>
+            <input class="form-control" type="search" id="q" name="q" value="{{ filters.q or '' }}"
+                   maxlength="{{ max_search_length }}" placeholder="Words in the title, content or category">
+        </div>
+        <div class="col-12 col-sm-6 col-lg-3">
+            <label class="form-label small mb-1" for="category">Category</label>
+            <select class="form-select" id="category" name="category">
+                <option value="">All</option>
+                {% for category in categories %}
+                <option value="{{ category }}" {% if filters.category == category %}selected{% endif %}>{{ category }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="col-12 col-sm-6 col-lg-3 d-flex gap-2">
+            <button class="btn btn-outline-secondary flex-fill" type="submit">Search</button>
+            {% if filters %}<a class="btn btn-link" href="{{ url_for('notes.index') }}">Clear</a>{% endif %}
+        </div>
+    </div>
+</form>
+
+<section class="card app-card" aria-label="Note list">
+    {% if pagination.items %}
+    <ul class="list-group list-group-flush">
+        {% for note in pagination.items %}
+        <li class="list-group-item app-item">
+            <div class="app-item-body">
+                <a class="fw-medium text-break" href="{{ url_for('notes.view', note_id=note.id) }}">{{ note.title }}</a>
+                {% if note.content %}
+                <div class="small text-body-secondary text-break">{{ note.content | truncate(160) }}</div>
+                {% endif %}
+                <div class="small mt-1 d-flex flex-wrap align-items-center gap-2">
+                    {% if note.category %}<span class="badge text-bg-light border">{{ note.category }}</span>{% endif %}
+                    <span class="text-body-secondary">Edited {{ note.updated_at | datetime_short }}</span>
+                </div>
+            </div>
+
+            <div class="app-item-actions">
+                <a class="btn app-icon-button" href="{{ url_for('notes.edit', note_id=note.id) }}" aria-label="Edit: {{ note.title }}">
+                    <i class="bi bi-pencil" aria-hidden="true"></i>
+                </a>
+                <a class="btn app-icon-button" href="{{ url_for('notes.delete', note_id=note.id) }}" aria-label="Delete: {{ note.title }}">
+                    <i class="bi bi-trash" aria-hidden="true"></i>
+                </a>
+            </div>
+        </li>
+        {% endfor %}
+    </ul>
+    {% elif filters %}
+    <div class="card-body app-empty">
+        <i class="bi bi-search" aria-hidden="true"></i>
+        <p class="mb-0 text-break">No notes match{% if filters.q %} "{{ filters.q }}"{% endif %}{% if filters.category %} in {{ filters.category }}{% endif %}.</p>
+        <a href="{{ url_for('notes.index') }}">Show all notes</a>
+    </div>
+    {% else %}
+    <div class="card-body app-empty">
+        <i class="bi bi-journal" aria-hidden="true"></i>
+        <p class="mb-0">You have no notes yet.</p>
+        <a href="{{ url_for('notes.new') }}">Create your first note</a>
+    </div>
+    {% endif %}
+</section>
+
+{{ render_pagination(pagination, "notes.index", filters) }}
+{% endblock %}

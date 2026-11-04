@@ -4,9 +4,9 @@ Task service: finding, filtering and completing tasks.
 Every lookup includes user_id, so one user can never reach another user's tasks.
 """
 
-from app.extensions import db
 from app.models import Task
 from app.services.common import get_owned_or_404
+from app.services.common import get_user_categories as get_categories_for
 from app.utils import utc_now
 
 STATUSES = ("pending", "overdue", "completed")
@@ -17,15 +17,8 @@ def get_user_task_or_404(user_id, task_id):
 
 
 def get_user_categories(user_id):
-    """The user's categories, A to Z, for the filter and the form suggestions."""
-    rows = (
-        db.session.query(Task.category)
-        .filter(Task.user_id == user_id, Task.category.is_not(None))
-        .distinct()
-        .order_by(Task.category)
-        .all()
-    )
-    return [row.category for row in rows]
+    """The user's task categories, for the filter and the form suggestions."""
+    return get_categories_for(Task, user_id)
 
 
 def build_task_query(user_id, status=None, priority=None, category=None):

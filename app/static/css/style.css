@@ -339,6 +339,11 @@ body {
     min-height: 44px;
 }
 
+/* Keeps the line breaks the user typed in a note */
+.app-note-content {
+    white-space: pre-wrap;
+}
+
 .app-form-card {
     max-width: 640px;
 }

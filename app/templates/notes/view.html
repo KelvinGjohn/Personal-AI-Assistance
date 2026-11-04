@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+
+{% block title %}Note{% endblock %}
+{% block page_title %}Note{% endblock %}
+
+{% block content %}
+<p><a href="{{ url_for('notes.index') }}"><i class="bi bi-arrow-left" aria-hidden="true"></i> All notes</a></p>
+
+<article class="card app-card app-form-card">
+    <div class="card-body">
+        <h2 class="h5 text-break">{{ note.title }}</h2>
+        <div class="small mb-3 d-flex flex-wrap align-items-center gap-2">
+            {% if note.category %}<span class="badge text-bg-light border">{{ note.category }}</span>{% endif %}
+            <span class="text-body-secondary">Edited {{ note.updated_at | datetime_short }}</span>
+        </div>
+        {% if note.content %}
+        <div class="app-note-content text-break">{{ note.content }}</div>
+        {% else %}
+        <p class="text-body-secondary">This note has no content.</p>
+        {% endif %}
+        <div class="d-flex gap-2 mt-3">
+            <a class="btn btn-primary" href="{{ url_for('notes.edit', note_id=note.id) }}">Edit</a>
+            <a class="btn btn-outline-secondary" href="{{ url_for('notes.delete', note_id=note.id) }}">Delete</a>
+        </div>
+    </div>
+</article>
+{% endblock %}
