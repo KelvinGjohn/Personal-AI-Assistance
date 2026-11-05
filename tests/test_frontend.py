@@ -28,8 +28,8 @@ def test_sidebar_marks_dashboard_as_current_page(auth_client):
 def test_unbuilt_pages_are_disabled_not_broken_links(auth_client):
     html = page_html(auth_client)
     # Pages from later days are shown with their day, with no link to a missing route
-    assert "Day 13" in html and "Day 19" in html
-    assert 'href="/chat' not in html
+    assert "Day 19" in html and "Day 20" in html
+    assert 'href="/search' not in html
     assert 'aria-disabled="true"' in html
 
 

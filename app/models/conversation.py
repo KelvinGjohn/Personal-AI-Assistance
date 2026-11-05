@@ -20,9 +20,11 @@ class Conversation(db.Model):
     updated_at = db.Column(db.DateTime, nullable=False, default=utc_now, onupdate=utc_now)
 
     user = db.relationship("User", back_populates="conversations")
-    # order_by keeps messages in the order they were written
+    # order_by keeps messages in the order they were written. The id settles
+    # any two messages saved at exactly the same moment.
     messages = db.relationship("Message", back_populates="conversation",
-                               cascade="all, delete-orphan", order_by="Message.created_at")
+                               cascade="all, delete-orphan",
+                               order_by="(Message.created_at, Message.id)")
 
     def __repr__(self):
         return f"<Conversation {self.id} {self.title!r}>"

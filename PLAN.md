@@ -19,7 +19,7 @@ One day at a time. A day is only marked done when its feature works and is teste
 | 11 | Notes | Notes with categories and search | Done |
 | **Phase 3 — AI integration** ||||
 | 12 | AI service foundation | Configurable AI provider + labelled fallback | Done |
-| 13 | Chat interface | Working chat page | |
+| 13 | Chat interface | Working chat page | Done |
 | 14 | Question and answer | Error handling, formatted answers | |
 | 15 | AI task assistance | Natural-language task creation (confirm first) | |
 | 16 | AI reminder assistance | Natural-language reminders (confirm first) | |

@@ -77,6 +77,11 @@ def get_provider():
     return FallbackProvider("The AI provider setting is not recognised.")
 
 
+def is_fallback_mode():
+    """True if questions will be answered by the fallback, not by an AI."""
+    return isinstance(get_provider(), FallbackProvider)
+
+
 def ask_ai(messages, system=SYSTEM_PROMPT):
     """
     Send a conversation to the AI and return an AIResponse.
