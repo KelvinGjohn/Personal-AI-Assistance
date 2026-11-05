@@ -2,7 +2,7 @@
 
 A web-based personal productivity assistant built with Python and Flask. Users can chat with an AI, manage tasks, reminders and notes, and see everything on one dashboard.
 
-> **Status:** Day 11 of 29 — Phase 2 is complete: accounts, settings, dashboard, tasks, reminders and notes work. For sample data, run `python scripts/seed_demo_data.py`, which prints a login for the demo account.
+> **Status:** Day 12 of 29 — accounts, settings, dashboard, tasks, reminders and notes work, and the AI service is ready for the chat page on Day 13. For sample data, run `python scripts/seed_demo_data.py`, which prints a login for the demo account.
 
 ## Planned technology stack
 
@@ -13,7 +13,7 @@ A web-based personal productivity assistant built with Python and Flask. Users c
 | Frontend             | HTML, CSS, JavaScript, Bootstrap    |
 | Database             | SQLite with SQLAlchemy              |
 | Authentication       | Flask-Login                         |
-| AI integration       | External AI API (configurable)      |
+| AI integration       | Claude (Anthropic API), configurable, with a labelled non-AI fallback |
 | Testing              | Pytest                              |
 | Version control      | Git and GitHub                      |
 
@@ -42,3 +42,18 @@ python run.py                    # then open http://127.0.0.1:5000
 ```
 
 Full instructions: [Development setup](documentation/Development_Setup.md) · Architecture: [System architecture](documentation/UML/System_Architecture.md)
+
+## Turning on real AI (optional)
+
+The app works without an API key: a fallback answers, and it always says it is not AI. For real answers, get an API key from Anthropic and set these in your `.env` file, which Git ignores. Real answers cost money.
+
+```
+AI_PROVIDER=claude
+AI_API_KEY=your-key-here
+```
+
+Then check it works. This sends one short message:
+
+```powershell
+python scripts/check_ai.py
+```

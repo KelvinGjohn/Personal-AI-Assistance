@@ -16,8 +16,8 @@ email-validator==2.3.0
 # Reads settings from the .env file
 python-dotenv==1.2.4
 
-# HTTP client for calling the AI provider
-requests==2.34.2
+# Official SDK for the Claude AI provider
+anthropic==2.5.0
 
 # Time zone data (Windows has none built in)
 tzdata==2026.6

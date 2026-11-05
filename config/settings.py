@@ -26,7 +26,8 @@ class Config:
     SQLALCHEMY_DATABASE_URI = os.environ.get("DATABASE_URL", "sqlite:///assistant.db")
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
-    # AI provider settings (used from Day 12). "fallback" means no real AI.
+    # AI provider settings. "fallback" means no real AI, "claude" uses the Anthropic API.
+    # An empty AI_MODEL means the provider's default model.
     AI_PROVIDER = os.environ.get("AI_PROVIDER", "fallback")
     AI_API_KEY = os.environ.get("AI_API_KEY", "")
     AI_MODEL = os.environ.get("AI_MODEL", "")
@@ -47,6 +48,10 @@ class TestingConfig(Config):
     SECRET_KEY = "test-only-secret-key"  # Not a real secret: only used inside tests
     SQLALCHEMY_DATABASE_URI = "sqlite:///:memory:"
     WTF_CSRF_ENABLED = False  # Tests post forms directly; test_auth.py switches it on to test it
+    # Tests must never spend money or send data, even if .env holds a real key
+    AI_PROVIDER = "fallback"
+    AI_API_KEY = ""
+    AI_MODEL = ""
 
 
 class ProductionConfig(Config):
