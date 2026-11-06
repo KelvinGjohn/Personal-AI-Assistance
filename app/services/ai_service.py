@@ -16,7 +16,9 @@ FALLBACK_LABEL = "Development mode - this is not an AI answer."
 
 SYSTEM_PROMPT = (
     "You are a personal assistant inside a productivity web app. "
-    "Answer clearly and briefly, in plain language."
+    "Answer clearly and briefly, in plain language. "
+    "The app shows simple Markdown: bold, italics, lists, code blocks, tables and web links. "
+    "It doesn't show images or raw HTML, so don't use them."
 )
 
 

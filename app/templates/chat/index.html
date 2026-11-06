@@ -30,8 +30,13 @@
                     {% if from_fallback %}<span class="badge app-badge-not-ai">Not AI</span>{% endif %}
                     <span class="fw-normal text-body-secondary">{{ message.created_at | datetime_short }}</span>
                 </div>
-                {# pre-wrap keeps line breaks, and the text stays escaped so nothing in it can run #}
+                {% if message.role == "assistant" and not from_fallback %}
+                {# AI answers: Markdown turned into HTML, then cleaned (see app/formatting.py) #}
+                <div class="app-markdown text-break">{{ message.content | markdown }}</div>
+                {% else %}
+                {# User messages and fallback replies: plain text. pre-wrap keeps line breaks. #}
                 <div class="app-note-content text-break">{{ message.content }}</div>
+                {% endif %}
             </article>
             {% endfor %}
         {% else %}
@@ -52,6 +57,13 @@
             {% for error in form.message.errors %}
             <div class="invalid-feedback">{{ error }}</div>
             {% endfor %}
+            {# Shown here, next to the box, because the top of a long chat is off screen #}
+            {% if ai_error %}
+            <div class="alert alert-danger mt-2 mb-0" role="alert">
+                <i class="bi bi-exclamation-triangle" aria-hidden="true"></i> {{ ai_error }}
+                Your message wasn't sent and is still in the box.
+            </div>
+            {% endif %}
             <div class="d-flex justify-content-between align-items-center gap-3 mt-2">
                 <span class="small text-body-secondary d-none d-lg-inline">Enter to send, Shift+Enter for a new line</span>
                 <span id="chat-status" class="small text-body-secondary" role="status"></span>

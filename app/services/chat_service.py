@@ -4,14 +4,37 @@ Chat service: sends a user's message to the AI and saves the conversation.
 Every lookup includes user_id, so one user can never reach another user's chats.
 """
 
+from datetime import timedelta
+
 from app.extensions import db
 from app.models import Conversation, Message
-from app.services.ai_service import FALLBACK_LABEL, ask_ai
+from app.services.ai_service import FALLBACK_LABEL, AIServiceError, ask_ai
 from app.services.common import get_owned_or_404
 from app.utils import utc_now
 
 MAX_HISTORY_MESSAGES = 20  # How many earlier messages the AI sees (Day 18 reviews this)
 TITLE_LENGTH = 60
+
+# Each AI answer costs money, so one account can't send an unlimited number
+MESSAGE_LIMIT = 50
+MESSAGE_LIMIT_PERIOD = timedelta(hours=1)
+
+CUT_OFF_NOTE = "\n\n*(This answer reached the length limit and was cut short.)*"
+
+
+def count_recent_messages(user_id, now=None):
+    """How many messages this user sent in the last MESSAGE_LIMIT_PERIOD, across all chats."""
+    if now is None:
+        now = utc_now()
+    return (
+        Message.query.join(Conversation)
+        .filter(
+            Conversation.user_id == user_id,
+            Message.role == "user",
+            Message.created_at >= now - MESSAGE_LIMIT_PERIOD,
+        )
+        .count()
+    )
 
 
 def get_user_conversation_or_404(user_id, conversation_id):
@@ -70,14 +93,21 @@ def send_message(user_id, conversation, text):
     AIServiceError and the conversation stays exactly as it was.
     """
     asked_at = utc_now()
+    if count_recent_messages(user_id, asked_at) >= MESSAGE_LIMIT:
+        raise AIServiceError(
+            f"You've sent {MESSAGE_LIMIT} messages in the last hour, which is the limit. "
+            "Please wait a while and try again."
+        )
+
     answer = ask_ai(build_ai_messages(conversation, text))
+    answer_text = answer.text + CUT_OFF_NOTE if answer.is_cut_off else answer.text
 
     if conversation is None:
         conversation = Conversation(user_id=user_id, title=make_title(text))
         db.session.add(conversation)
 
     conversation.messages.append(Message(role="user", content=text, created_at=asked_at))
-    conversation.messages.append(Message(role="assistant", content=answer.text))
+    conversation.messages.append(Message(role="assistant", content=answer_text))
     # Adding messages doesn't change the conversation's own row, so set this directly
     conversation.updated_at = utc_now()
     db.session.commit()

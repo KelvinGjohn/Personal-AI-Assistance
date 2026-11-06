@@ -1,6 +1,6 @@
 """Chat routes: the page where the user talks to the AI."""
 
-from flask import Blueprint, flash, redirect, render_template, url_for
+from flask import Blueprint, redirect, render_template, url_for
 from flask_login import current_user, login_required
 
 from app.forms.chat_forms import MAX_MESSAGE_LENGTH, ChatForm
@@ -18,12 +18,13 @@ chat_bp = Blueprint("chat", __name__, url_prefix="/chat")
 def chat_page(conversation):
     """Show a chat and handle a sent message. conversation is None for a new chat."""
     form = ChatForm()
+    ai_error = None
     if form.validate_on_submit():
         try:
             conversation = send_message(current_user.id, conversation, form.message.data)
         except AIServiceError as error:
             # Nothing was saved, and the form still holds the text so it can be sent again
-            flash(str(error), "danger")
+            ai_error = str(error)
         else:
             # Redirecting means refreshing the page won't send the message twice
             return redirect(url_for("chat.conversation", conversation_id=conversation.id))
@@ -32,6 +33,7 @@ def chat_page(conversation):
         "chat/index.html",
         form=form,
         conversation=conversation,
+        ai_error=ai_error,
         fallback_mode=is_fallback_mode(),
         is_fallback_message=is_fallback_message,
         max_message_length=MAX_MESSAGE_LENGTH,

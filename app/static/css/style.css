@@ -384,6 +384,63 @@ body {
     background: #fffbeb;
 }
 
+/* Formatted AI answers */
+.app-markdown > :last-child {
+    margin-bottom: 0;
+}
+
+.app-markdown h1,
+.app-markdown h2,
+.app-markdown h3,
+.app-markdown h4,
+.app-markdown h5,
+.app-markdown h6 {
+    font-size: 1rem;
+    font-weight: 600;
+    margin-top: 0.75rem;
+}
+
+/* Long code lines and wide tables scroll inside the bubble, not the whole page */
+.app-markdown pre,
+.app-markdown table {
+    display: block;
+    max-width: 100%;
+    overflow-x: auto;
+}
+
+.app-markdown pre {
+    padding: 12px;
+    border-radius: 8px;
+    background: #f5f5f4;
+    white-space: pre;
+    word-break: normal;
+}
+
+.app-markdown code {
+    color: #9a3412;
+}
+
+.app-markdown pre code {
+    color: inherit;
+}
+
+.app-markdown table {
+    margin-bottom: 1rem;
+    border-collapse: collapse;
+}
+
+.app-markdown th,
+.app-markdown td {
+    padding: 4px 10px;
+    border: 1px solid var(--app-border);
+}
+
+.app-markdown blockquote {
+    padding-left: 12px;
+    border-left: 3px solid var(--app-border);
+    color: #57534e;
+}
+
 .app-badge-not-ai {
     background: #92400e;
     color: #fff;

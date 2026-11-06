@@ -19,6 +19,10 @@ python-dotenv==1.2.4
 # Official SDK for the Claude AI provider
 anthropic==2.5.0
 
+# Showing AI answers with formatting: Markdown to HTML, then removing anything unsafe
+Markdown==3.11.3
+nh3==0.3.7
+
 # Time zone data (Windows has none built in)
 tzdata==2026.6
 
