@@ -100,7 +100,11 @@ def assist():
                 suggestion=suggestion,
             )
 
-    return render_template("tasks/assist.html", form=request_form, ai_error=ai_error)
+    return render_template(
+        "assistant/request.html", form=request_form, ai_error=ai_error,
+        heading="Create a task with AI", manual_url=url_for("tasks.new"),
+        example="For example: submit the database report by Friday, it's urgent",
+    )
 
 
 @tasks_bp.route("/<int:task_id>/edit", methods=["GET", "POST"])

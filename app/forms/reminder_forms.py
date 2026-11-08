@@ -33,3 +33,13 @@ class ReminderForm(FlaskForm):
         new_time = user_time_to_utc(field.data)
         if new_time <= utc_now() and new_time != self.saved_time:
             raise ValidationError("Choose a time in the future.")
+
+
+class ReminderRequestForm(FlaskForm):
+    """A reminder described in plain words, for the AI to turn into a suggestion."""
+
+    request = TextAreaField("Describe the reminder", filters=[clean_text], validators=[
+        DataRequired(message="Describe the reminder first."),
+        Length(max=1000, message="Please keep it to 1000 characters or fewer."),
+    ])
+    submit = SubmitField("Suggest reminder")

@@ -4,8 +4,10 @@ from flask import Blueprint, flash, redirect, render_template, request, url_for
 from flask_login import current_user, login_required
 
 from app.extensions import db
-from app.forms.reminder_forms import ReminderForm
+from app.forms.reminder_forms import ReminderForm, ReminderRequestForm
 from app.models import Reminder
+from app.services.ai_service import AIServiceError
+from app.services.reminder_assistant import suggest_reminder
 from app.services.common import paginate_query
 from app.services.reminder_service import (
     STATUSES,
@@ -59,6 +61,37 @@ def new():
         return redirect(url_for("reminders.index"))
 
     return render_template("reminders/form.html", form=form, heading="New reminder")
+
+
+@reminders_bp.route("/assist", methods=["GET", "POST"])
+@login_required
+def assist():
+    """
+    The user describes a reminder in plain words and gets a filled-in form,
+    with a question about anything missing. Nothing is saved here: the form
+    posts to reminders.new like a normal new reminder.
+    """
+    request_form = ReminderRequestForm()
+    ai_error = None
+
+    if request_form.validate_on_submit():
+        try:
+            suggestion = suggest_reminder(request_form.request.data, current_user.timezone)
+        except AIServiceError as error:
+            ai_error = str(error)
+        else:
+            # formdata=None: fill the form from the suggestion, not from what was just posted
+            form = ReminderForm(formdata=None, data=suggestion.values)
+            return render_template(
+                "reminders/form.html", form=form, heading="Check the suggested reminder",
+                form_action=url_for("reminders.new"), suggestion=suggestion,
+            )
+
+    return render_template(
+        "assistant/request.html", form=request_form, ai_error=ai_error,
+        heading="Create a reminder with AI", manual_url=url_for("reminders.new"),
+        example="For example: remind me to call the dentist tomorrow at 10",
+    )
 
 
 @reminders_bp.route("/<int:reminder_id>/edit", methods=["GET", "POST"])

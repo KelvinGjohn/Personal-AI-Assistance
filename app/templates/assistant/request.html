@@ -1,20 +1,21 @@
 {% extends "base.html" %}
+{# Shared by "Create with AI" for tasks and reminders. The route passes heading, example and manual_url. #}
 
-{% block title %}Create a task with AI{% endblock %}
-{% block page_title %}Create a task with AI{% endblock %}
+{% block title %}{{ heading }}{% endblock %}
+{% block page_title %}{{ heading }}{% endblock %}
 
 {% block content %}
 <div class="card app-card app-form-card">
     <div class="card-body">
         <p class="text-body-secondary">
-            Describe the task in your own words. You'll see the suggested details and can change them before anything is saved.
+            Describe it in your own words. You'll see the suggested details and can change them before anything is saved.
         </p>
         <form method="post" id="assist-form" novalidate>
             {{ form.hidden_tag() }}
             <label class="form-label" for="{{ form.request.id }}">{{ form.request.label.text }}</label>
             {{ form.request(class="form-control is-invalid" if form.request.errors else "form-control",
                             rows=3, maxlength=1000, autofocus=true,
-                            placeholder="For example: submit the database report by Friday, it's urgent") }}
+                            placeholder=example) }}
             {% for error in form.request.errors %}
             <div class="invalid-feedback">{{ error }}</div>
             {% endfor %}
@@ -25,7 +26,7 @@
             {% endif %}
             <div class="d-flex flex-wrap align-items-center gap-2 mt-3">
                 {{ form.submit(class="btn btn-primary app-touch", id="assist-submit") }}
-                <a class="btn btn-outline-secondary app-touch" href="{{ url_for('tasks.new') }}">Fill in the form myself</a>
+                <a class="btn btn-outline-secondary app-touch" href="{{ manual_url }}">Fill in the form myself</a>
                 <span id="assist-status" class="small text-body-secondary" role="status"></span>
             </div>
         </form>

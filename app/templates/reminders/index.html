@@ -12,9 +12,14 @@
     <p class="text-body-secondary mb-0" role="status">
         {{ pagination.total }} reminder{{ "" if pagination.total == 1 else "s" }}
     </p>
-    <a class="btn btn-primary" href="{{ url_for('reminders.new') }}">
-        <i class="bi bi-plus-lg" aria-hidden="true"></i> New reminder
-    </a>
+    <div class="d-flex flex-wrap justify-content-end gap-2">
+        <a class="btn btn-outline-primary" href="{{ url_for('reminders.assist') }}">
+            <i class="bi bi-stars" aria-hidden="true"></i> Create with AI
+        </a>
+        <a class="btn btn-primary" href="{{ url_for('reminders.new') }}">
+            <i class="bi bi-plus-lg" aria-hidden="true"></i> New reminder
+        </a>
+    </div>
 </div>
 
 <nav class="nav nav-pills app-pills mb-3" aria-label="Filter reminders">

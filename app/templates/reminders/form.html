@@ -5,9 +5,37 @@
 {% block page_title %}{{ heading }}{% endblock %}
 
 {% block content %}
+{% if suggestion %}
+<div class="alert {{ 'alert-info' if suggestion.made_by_ai else 'alert-warning' }} app-form-card" role="status">
+    {% if suggestion.made_by_ai %}
+    <strong>Suggested by AI.</strong> Check every detail. Nothing is saved until you press Save reminder.
+    {% else %}
+    <strong>Development mode - not AI.</strong> No AI provider is set up, so nothing was worked out.
+    Your words are in the title. Nothing is saved until you press Save reminder.
+    {% endif %}
+</div>
+
+{# FR-54: ask for missing details instead of guessing them #}
+{% if suggestion.missing or suggestion.passed_time %}
+<div class="alert alert-warning app-form-card" role="alert">
+    <i class="bi bi-question-circle" aria-hidden="true"></i>
+    {% if suggestion.passed_time %}
+    <strong>That time has already passed:</strong> {{ suggestion.passed_time.strftime("%a %d %b %Y, %H:%M") }}.
+    When should I remind you instead?
+    {% elif suggestion.missing == ["a time"] %}
+    <strong>What time?</strong> You said {{ suggestion.known_date.strftime("%A %d %B %Y") }}, but not the time.
+    {% else %}
+    <strong>When should I remind you?</strong> Your request didn't say {{ suggestion.missing | join(" or ") }}.
+    {% endif %}
+    Please fill in "Remind me at" below.
+</div>
+{% endif %}
+{% endif %}
+
 <div class="card app-card app-form-card">
     <div class="card-body">
-        <form method="post" novalidate>
+        {# form_action is set when another page fills this form; otherwise it posts to its own address #}
+        <form method="post" {% if form_action %}action="{{ form_action }}"{% endif %} novalidate>
             {{ form.hidden_tag() }}
             {{ render_field(form.title, autofocus=true, maxlength=200) }}
             {{ render_field(form.description, rows=3) }}
