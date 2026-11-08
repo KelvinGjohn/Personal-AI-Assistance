@@ -12,9 +12,14 @@
     <p class="text-body-secondary mb-0" role="status">
         {{ pagination.total }} task{{ "" if pagination.total == 1 else "s" }}{% if filters %} {{ "matches" if pagination.total == 1 else "match" }} your filters{% endif %}
     </p>
-    <a class="btn btn-primary" href="{{ url_for('tasks.new') }}">
-        <i class="bi bi-plus-lg" aria-hidden="true"></i> New task
-    </a>
+    <div class="d-flex flex-wrap justify-content-end gap-2">
+        <a class="btn btn-outline-primary" href="{{ url_for('tasks.assist') }}">
+            <i class="bi bi-stars" aria-hidden="true"></i> Create with AI
+        </a>
+        <a class="btn btn-primary" href="{{ url_for('tasks.new') }}">
+            <i class="bi bi-plus-lg" aria-hidden="true"></i> New task
+        </a>
+    </div>
 </div>
 
 {# Filters use GET, so a filtered list has its own address and can be refreshed #}

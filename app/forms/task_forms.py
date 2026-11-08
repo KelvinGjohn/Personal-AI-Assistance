@@ -43,3 +43,13 @@ class TaskForm(FlaskForm):
 
     def validate_due_date(self, field):
         check_year_range(field)
+
+
+class TaskRequestForm(FlaskForm):
+    """A task described in plain words, for the AI to turn into a suggestion."""
+
+    request = TextAreaField("Describe the task", filters=[clean_text], validators=[
+        DataRequired(message="Describe the task first."),
+        Length(max=1000, message="Please keep it to 1000 characters or fewer."),
+    ])
+    submit = SubmitField("Suggest task")

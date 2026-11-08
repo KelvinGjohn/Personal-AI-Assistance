@@ -5,6 +5,8 @@ To add another provider later, write a class like this one with a name and an
 ask() method, then add it to get_provider() in ai_service.py.
 """
 
+import json
+
 import anthropic
 from flask import current_app
 
@@ -34,6 +36,31 @@ class ClaudeProvider:
         self.model = model
 
     def ask(self, messages, system):
+        """A normal answer, written as text."""
+        response = self._send(messages, system, {"effort": "medium"})
+        return AIResponse(
+            text=self._read_text(response),
+            provider=self.name,
+            is_cut_off=response.stop_reason == "max_tokens",
+        )
+
+    def ask_json(self, messages, system, schema):
+        """
+        An answer as a dictionary that follows the JSON schema. Claude's
+        structured output feature makes the reply follow the schema exactly.
+        Simple extraction doesn't need deep thinking, so effort is low.
+        """
+        output_config = {"effort": "low", "format": {"type": "json_schema", "schema": schema}}
+        response = self._send(messages, system, output_config)
+        if response.stop_reason == "max_tokens":
+            raise AIServiceError("The AI's answer was too long. Please try a shorter request.")
+        try:
+            return json.loads(self._read_text(response))
+        except json.JSONDecodeError as error:
+            raise AIServiceError("The AI's answer couldn't be read. Please try again.") from error
+
+    def _send(self, messages, system, output_config):
+        """Send the request and handle the problems every kind of answer can have."""
         options = {}
         if self.model in MODELS_WITH_SERVER_FALLBACK:
             # If a safety check declines the request, Anthropic retries it on
@@ -47,7 +74,7 @@ class ClaudeProvider:
                 system=system,
                 messages=messages,
                 thinking={"type": "adaptive"},
-                output_config={"effort": "medium"},
+                output_config=output_config,
                 **options,
             )
         except anthropic.APIError as error:
@@ -55,17 +82,14 @@ class ClaudeProvider:
 
         if response.stop_reason == "refusal":
             raise AIServiceError("The AI can't help with that request. Please try asking differently.")
+        return response
 
-        # An answer is a list of blocks, and only some of them are text
+    def _read_text(self, response):
+        """An answer is a list of blocks, and only some of them are text."""
         text = "".join(block.text for block in response.content if block.type == "text").strip()
         if not text:
             raise AIServiceError("The AI didn't return an answer. Please try again.")
-
-        return AIResponse(
-            text=text,
-            provider=self.name,
-            is_cut_off=response.stop_reason == "max_tokens",
-        )
+        return text
 
     def _friendly_message(self, error):
         """

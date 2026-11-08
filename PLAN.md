@@ -21,7 +21,7 @@ One day at a time. A day is only marked done when its feature works and is teste
 | 12 | AI service foundation | Configurable AI provider + labelled fallback | Done |
 | 13 | Chat interface | Working chat page | Done |
 | 14 | Question and answer | Error handling, formatted answers | Done |
-| 15 | AI task assistance | Natural-language task creation (confirm first) | |
+| 15 | AI task assistance | Natural-language task creation (confirm first) | Done |
 | 16 | AI reminder assistance | Natural-language reminders (confirm first) | |
 | 17 | AI over personal data | Answers about the user's own notes/tasks | |
 | 18 | Conversation memory | Saved, resumable, deletable conversations | |

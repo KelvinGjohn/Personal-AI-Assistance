@@ -32,6 +32,15 @@ body {
     --bs-btn-active-bg: #134e4a;
 }
 
+.btn-outline-primary {
+    --bs-btn-color: var(--app-accent);
+    --bs-btn-border-color: var(--app-accent);
+    --bs-btn-hover-bg: var(--app-accent);
+    --bs-btn-hover-border-color: var(--app-accent);
+    --bs-btn-active-bg: #115e59;
+    --bs-btn-active-border-color: #115e59;
+}
+
 .skip-link {
     position: absolute;
     top: 8px;

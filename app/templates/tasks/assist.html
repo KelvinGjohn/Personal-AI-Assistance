@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+
+{% block title %}Create a task with AI{% endblock %}
+{% block page_title %}Create a task with AI{% endblock %}
+
+{% block content %}
+<div class="card app-card app-form-card">
+    <div class="card-body">
+        <p class="text-body-secondary">
+            Describe the task in your own words. You'll see the suggested details and can change them before anything is saved.
+        </p>
+        <form method="post" id="assist-form" novalidate>
+            {{ form.hidden_tag() }}
+            <label class="form-label" for="{{ form.request.id }}">{{ form.request.label.text }}</label>
+            {{ form.request(class="form-control is-invalid" if form.request.errors else "form-control",
+                            rows=3, maxlength=1000, autofocus=true,
+                            placeholder="For example: submit the database report by Friday, it's urgent") }}
+            {% for error in form.request.errors %}
+            <div class="invalid-feedback">{{ error }}</div>
+            {% endfor %}
+            {% if ai_error %}
+            <div class="alert alert-danger mt-2 mb-0" role="alert">
+                <i class="bi bi-exclamation-triangle" aria-hidden="true"></i> {{ ai_error }}
+            </div>
+            {% endif %}
+            <div class="d-flex flex-wrap align-items-center gap-2 mt-3">
+                {{ form.submit(class="btn btn-primary app-touch", id="assist-submit") }}
+                <a class="btn btn-outline-secondary app-touch" href="{{ url_for('tasks.new') }}">Fill in the form myself</a>
+                <span id="assist-status" class="small text-body-secondary" role="status"></span>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // Shows that the AI is working, and stops the request being sent twice
+    document.getElementById("assist-form").addEventListener("submit", function (event) {
+        var button = document.getElementById("assist-submit");
+        if (button.disabled) {
+            event.preventDefault();
+            return;
+        }
+        button.disabled = true;
+        document.getElementById("assist-status").textContent = "Working it out...";
+    });
+    window.addEventListener("pageshow", function () {
+        document.getElementById("assist-submit").disabled = false;
+        document.getElementById("assist-status").textContent = "";
+    });
+</script>
+{% endblock %}

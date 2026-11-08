@@ -4,7 +4,9 @@ from flask import Blueprint, flash, redirect, render_template, request, url_for
 from flask_login import current_user, login_required
 
 from app.extensions import db
-from app.forms.task_forms import TaskForm
+from app.forms.task_forms import TaskForm, TaskRequestForm
+from app.services.ai_service import AIServiceError
+from app.services.task_assistant import suggest_task
 from app.models import Task
 from app.models.task import PRIORITIES
 from app.services.common import paginate_query
@@ -71,6 +73,34 @@ def new():
 
     return render_template("tasks/form.html", form=form, heading="New task",
                            categories=get_user_categories(current_user.id))
+
+
+@tasks_bp.route("/assist", methods=["GET", "POST"])
+@login_required
+def assist():
+    """
+    The user describes a task in plain words and gets a filled-in task form.
+    Nothing is saved here: the form posts to tasks.new like a normal new task.
+    """
+    request_form = TaskRequestForm()
+    ai_error = None
+    categories = get_user_categories(current_user.id)
+
+    if request_form.validate_on_submit():
+        try:
+            suggestion = suggest_task(request_form.request.data, current_user.timezone, categories)
+        except AIServiceError as error:
+            ai_error = str(error)
+        else:
+            # formdata=None: fill the form from the suggestion, not from what was just posted
+            form = TaskForm(formdata=None, data=suggestion.values)
+            return render_template(
+                "tasks/form.html", form=form, heading="Check the suggested task",
+                form_action=url_for("tasks.new"), categories=categories,
+                suggestion=suggestion,
+            )
+
+    return render_template("tasks/assist.html", form=request_form, ai_error=ai_error)
 
 
 @tasks_bp.route("/<int:task_id>/edit", methods=["GET", "POST"])

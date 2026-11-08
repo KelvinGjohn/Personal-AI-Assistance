@@ -84,6 +84,11 @@ def is_fallback_mode():
     return isinstance(get_provider(), FallbackProvider)
 
 
+def check_messages(messages):
+    if not messages or messages[-1]["role"] != "user" or not messages[-1]["content"].strip():
+        raise AIServiceError("Please enter a message.")
+
+
 def ask_ai(messages, system=SYSTEM_PROMPT):
     """
     Send a conversation to the AI and return an AIResponse.
@@ -91,7 +96,19 @@ def ask_ai(messages, system=SYSTEM_PROMPT):
     messages is a list such as [{"role": "user", "content": "Hello"}], with the
     newest message last. Raises AIServiceError if the AI can't answer.
     """
-    if not messages or messages[-1]["role"] != "user" or not messages[-1]["content"].strip():
-        raise AIServiceError("Please enter a message.")
-
+    check_messages(messages)
     return get_provider().ask(messages, system)
+
+
+def ask_ai_json(messages, system, schema):
+    """
+    Ask the AI for data that follows a JSON schema, and return it as a dictionary.
+
+    Only a real AI can do this, so in fallback mode it raises AIServiceError.
+    The answer still comes from an AI, so check every value before using it.
+    """
+    check_messages(messages)
+    provider = get_provider()
+    if isinstance(provider, FallbackProvider):
+        raise AIServiceError("This needs an AI provider, and none is set up.")
+    return provider.ask_json(messages, system, schema)
