@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+
+{% block title %}{{ "Search: " ~ q if q else "Search" }}{% endblock %}
+{% block page_title %}Search{% endblock %}
+
+{% macro highlighted(snippet) %}
+{# Each part is escaped by Jinja; only the <mark> tag around the match is HTML #}
+<div class="small text-body-secondary text-break">{{ snippet[0] }}<mark>{{ snippet[1] }}</mark>{{ snippet[2] }}</div>
+{% endmacro %}
+
+{% block content %}
+<div class="app-chat">
+    <form method="get" role="search" class="card app-card mb-3" aria-label="Search everything">
+        <div class="card-body row g-2 align-items-end">
+            <div class="col-12 col-md-7">
+                <label class="form-label small mb-1" for="q">Search for</label>
+                <input class="form-control" type="search" id="q" name="q" value="{{ q }}"
+                       maxlength="{{ max_search_length }}" autofocus
+                       placeholder="Words in your tasks, reminders, notes and chats">
+            </div>
+            <div class="col-12 col-sm-6 col-md-3">
+                <label class="form-label small mb-1" for="type">In</label>
+                <select class="form-select" id="type" name="type">
+                    <option value="">Everything</option>
+                    {% for kind in types %}
+                    <option value="{{ kind }}" {% if only_type == kind %}selected{% endif %}>{{ type_labels[kind] }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-12 col-sm-6 col-md-2">
+                <button class="btn btn-primary w-100 app-touch" type="submit">Search</button>
+            </div>
+        </div>
+    </form>
+
+    {% if not q %}
+    <div class="app-empty">
+        <i class="bi bi-search" aria-hidden="true"></i>
+        <p class="mb-0">Type a few words to search. Upper and lower case and accents don't matter.</p>
+    </div>
+    {% else %}
+    <p class="text-body-secondary" role="status">
+        {{ total }} result{{ "" if total == 1 else "s" }} for "{{ q }}"{% if only_type %} in {{ type_labels[only_type] | lower }}{% endif %}
+    </p>
+
+    {% for group in groups %}
+    <section class="card app-card mb-3" aria-labelledby="results-{{ group.type }}">
+        <div class="card-header bg-transparent d-flex justify-content-between align-items-center">
+            <h2 class="h6 mb-0" id="results-{{ group.type }}">{{ group.label }} ({{ group.total }})</h2>
+            {% if not only_type and group.total > group.results | length %}
+            <a class="small" href="{{ url_for('search.index', q=q, type=group.type) }}">Show all {{ group.total }}</a>
+            {% endif %}
+        </div>
+        {% if group.results %}
+        <ul class="list-group list-group-flush">
+            {% for result in group.results %}
+            <li class="list-group-item">
+                <a class="fw-medium text-break" href="{{ result.url }}">{{ result.title }}</a>
+                {% if result.detail %}<div class="small text-body-secondary">{{ result.detail }}</div>{% endif %}
+                {% if result.snippet %}{{ highlighted(result.snippet) }}{% endif %}
+            </li>
+            {% endfor %}
+        </ul>
+        {% if only_type and group.total > group.results | length %}
+        <div class="card-body small text-body-secondary">
+            Showing the first {{ single_type_count }}. Add more words to narrow the search.
+        </div>
+        {% endif %}
+        {% else %}
+        <div class="card-body small text-body-secondary">No {{ group.label | lower }} match.</div>
+        {% endif %}
+    </section>
+    {% endfor %}
+    {% endif %}
+</div>
+{% endblock %}

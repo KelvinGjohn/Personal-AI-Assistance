@@ -14,6 +14,8 @@ from flask_wtf.csrf import CSRFProtect
 from sqlalchemy import event
 from sqlalchemy.engine import Engine
 
+from app.text_search import fold
+
 db = SQLAlchemy()
 
 # Remembers who is logged in between requests, using a signed session cookie
@@ -36,3 +38,6 @@ def enable_sqlite_foreign_keys(dbapi_connection, connection_record):
         cursor = dbapi_connection.cursor()
         cursor.execute("PRAGMA foreign_keys=ON")
         cursor.close()
+        # Lets SQL use fold() for searching (see app/text_search.py).
+        # deterministic=True: the same input always gives the same output.
+        dbapi_connection.create_function("fold", 1, fold, deterministic=True)

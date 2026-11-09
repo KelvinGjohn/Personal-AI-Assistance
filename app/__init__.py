@@ -70,6 +70,7 @@ def register_blueprints(app):
     from app.routes.notes import notes_bp
     from app.routes.notifications import notifications_bp
     from app.routes.reminders import reminders_bp
+    from app.routes.search import search_bp
     from app.routes.settings import settings_bp
     from app.routes.tasks import tasks_bp
 
@@ -81,6 +82,7 @@ def register_blueprints(app):
     app.register_blueprint(notes_bp)
     app.register_blueprint(chat_bp)
     app.register_blueprint(notifications_bp)
+    app.register_blueprint(search_bp)
 
 
 def register_template_helpers(app):
