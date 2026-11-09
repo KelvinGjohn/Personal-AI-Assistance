@@ -8,7 +8,10 @@ disabled with a "Day N" badge instead of a broken link.
 """
 
 from flask import current_app, request
+from flask_login import current_user
+from sqlalchemy.exc import SQLAlchemyError
 
+from app.services.notification_service import count_unread
 from app.utils import to_user_time, utc_now
 
 NAV_ITEMS = [
@@ -46,4 +49,20 @@ def inject_layout_data():
         "nav_items": build_nav_items(),
         "app_name": current_app.config["APP_NAME"],
         "today": to_user_time(utc_now()),
+        # For the bell in the header
+        "unread_count": safe_unread_count(),
     }
+
+
+def safe_unread_count():
+    """
+    Every page shows this, including the error page. If the database itself is
+    the problem, the bell shows nothing instead of breaking the error page too.
+    """
+    if not current_user.is_authenticated:
+        return 0
+    try:
+        return count_unread(current_user.id)
+    except SQLAlchemyError:
+        current_app.logger.exception("Couldn't count unread notifications")
+        return 0

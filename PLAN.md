@@ -26,7 +26,7 @@ One day at a time. A day is only marked done when its feature works and is teste
 | 17 | AI over personal data | Answers about the user's own notes/tasks | Done |
 | 18 | Conversation memory | Saved, resumable, deletable conversations | Done |
 | **Phase 4 — Advanced features** ||||
-| 19 | Notifications | In-app notifications, mark as read | |
+| 19 | Notifications | In-app notifications, mark as read | Done |
 | 20 | Search | Global search with filters | |
 | 21 | Calendar | Daily and weekly schedule views | |
 | 22 | Integration | All modules working together | |

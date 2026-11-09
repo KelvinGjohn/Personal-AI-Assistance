@@ -183,6 +183,20 @@ body {
     gap: 8px;
 }
 
+.app-unread-badge {
+    position: absolute;
+    top: 4px;
+    right: 2px;
+    background: #b42318;
+    color: #fff;
+    font-size: 0.7rem;
+}
+
+/* Unread notifications have a coloured edge, as well as bold text */
+.app-unread {
+    border-left: 4px solid var(--app-accent);
+}
+
 .app-avatar {
     display: inline-flex;
     align-items: center;

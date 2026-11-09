@@ -29,6 +29,13 @@
 
                 <div class="app-header-user">
                     {% if current_user.is_authenticated %}
+                    <a class="btn app-icon-button position-relative" href="{{ url_for('notifications.index') }}"
+                       aria-label="Notifications, {{ unread_count }} unread">
+                        <i class="bi bi-bell" aria-hidden="true"></i>
+                        {% if unread_count %}
+                        <span class="badge rounded-pill app-unread-badge" aria-hidden="true">{{ unread_count if unread_count < 100 else "99+" }}</span>
+                        {% endif %}
+                    </a>
                     <div class="dropdown">
                         <button class="btn app-user-button dropdown-toggle" type="button"
                                 data-bs-toggle="dropdown" aria-expanded="false"

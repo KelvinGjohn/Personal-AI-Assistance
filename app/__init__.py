@@ -39,6 +39,7 @@ def create_app(config_name=None):
     register_blueprints(app)
     register_template_helpers(app)
     register_error_handlers(app)
+    register_notification_check(app)
     return app
 
 
@@ -67,6 +68,7 @@ def register_blueprints(app):
     from app.routes.main import main_bp
     from app.routes.chat import chat_bp
     from app.routes.notes import notes_bp
+    from app.routes.notifications import notifications_bp
     from app.routes.reminders import reminders_bp
     from app.routes.settings import settings_bp
     from app.routes.tasks import tasks_bp
@@ -78,6 +80,7 @@ def register_blueprints(app):
     app.register_blueprint(reminders_bp)
     app.register_blueprint(notes_bp)
     app.register_blueprint(chat_bp)
+    app.register_blueprint(notifications_bp)
 
 
 def register_template_helpers(app):
@@ -107,3 +110,21 @@ def register_error_handlers(app):
     @app.errorhandler(500)
     def internal_server_error(error):
         return render_template("errors/500.html"), 500
+
+
+def register_notification_check(app):
+    """
+    Before each page a logged-in user opens, create notifications for anything
+    that has just become due. Only for GET pages: a form post is followed by a
+    redirect to a page, which runs the check anyway.
+    """
+    from flask import request
+    from flask_login import current_user
+
+    from app.services.notification_service import check_for_new_notifications
+
+    @app.before_request
+    def check_notifications():
+        if request.method == "GET" and request.endpoint not in (None, "static") \
+                and current_user.is_authenticated:
+            check_for_new_notifications(current_user.id)

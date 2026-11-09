@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+{% from "partials/pagination.html" import render_pagination %}
+
+{% block title %}Notifications{% endblock %}
+{% block page_title %}Notifications{% endblock %}
+
+{% block content %}
+{% set current_list = request.full_path.rstrip("?") %}
+<div class="app-chat">
+    <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-3">
+        <p class="text-body-secondary mb-0" role="status">
+            {{ unread_count }} unread
+        </p>
+        {% if unread_count %}
+        <form method="post" action="{{ url_for('notifications.read_all') }}">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <button class="btn btn-outline-secondary app-touch" type="submit">Mark all as read</button>
+        </form>
+        {% endif %}
+    </div>
+
+    <section class="card app-card" aria-label="Notification list">
+        {% if pagination.items %}
+        <ul class="list-group list-group-flush">
+            {% for notification in pagination.items %}
+            <li class="list-group-item app-item {{ 'app-unread' if not notification.is_read }}">
+                <div class="app-item-body">
+                    <form method="post" action="{{ url_for('notifications.open_notification', notification_id=notification.id) }}">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                        <button class="btn btn-link p-0 text-start text-break {{ 'fw-semibold' if not notification.is_read }}" type="submit">
+                            {% if not notification.is_read %}<span class="visually-hidden">Unread: </span>{% endif %}{{ notification.message }}
+                        </button>
+                    </form>
+                    <div class="small text-body-secondary">{{ notification.created_at | datetime_short }}</div>
+                </div>
+                {% if not notification.is_read %}
+                <div class="app-item-actions">
+                    <form method="post" action="{{ url_for('notifications.mark_read', notification_id=notification.id) }}">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                        <input type="hidden" name="next" value="{{ current_list }}">
+                        <button class="btn app-icon-button" type="submit" aria-label="Mark as read: {{ notification.message }}">
+                            <i class="bi bi-check2" aria-hidden="true"></i>
+                        </button>
+                    </form>
+                </div>
+                {% endif %}
+            </li>
+            {% endfor %}
+        </ul>
+        {% else %}
+        <div class="card-body app-empty">
+            <i class="bi bi-bell" aria-hidden="true"></i>
+            <p class="mb-0">No notifications yet. You'll see one here when a reminder is due or a task becomes overdue.</p>
+        </div>
+        {% endif %}
+    </section>
+
+    {{ render_pagination(pagination, "notifications.index", {}) }}
+</div>
+{% endblock %}

@@ -13,8 +13,8 @@ class Reminder(db.Model):
     title = db.Column(db.String(200), nullable=False)
     description = db.Column(db.Text)
     remind_at = db.Column(db.DateTime, nullable=False, index=True)  # stored in UTC
-    # True once the user has been told: they dismissed it, or a notification
-    # was created for it (Day 19). Setting a new time makes it False again.
+    # True once the user has dismissed it. Setting a new time makes it False again.
+    # Notifications don't change it: they keep their own record (notification_service.py).
     is_notified = db.Column(db.Boolean, nullable=False, default=False)
     created_at = db.Column(db.DateTime, nullable=False, default=utc_now)
 
