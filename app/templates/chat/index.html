@@ -5,14 +5,28 @@
 
 {% block content %}
 <div class="app-chat">
-    <div class="d-flex justify-content-between align-items-center gap-3 mb-3">
-        <h2 class="h6 mb-0 text-break">{{ conversation.title if conversation else "New chat" }}</h2>
+    <h2 class="h6 mb-2 text-break">{{ conversation.title if conversation else "New chat" }}</h2>
+    <nav class="d-flex flex-wrap gap-2 mb-3" aria-label="Chat actions">
+        <a class="btn btn-outline-secondary btn-sm app-touch" href="{{ url_for('chat.history') }}">
+            <i class="bi bi-list-ul" aria-hidden="true"></i> All chats
+        </a>
         {% if conversation %}
-        <a class="btn btn-outline-secondary flex-shrink-0" href="{{ url_for('chat.new') }}">
+        <a class="btn btn-outline-secondary btn-sm app-touch" href="{{ url_for('chat.new') }}">
             <i class="bi bi-plus-lg" aria-hidden="true"></i> New chat
         </a>
+        <a class="btn btn-outline-secondary btn-sm app-touch" href="{{ url_for('chat.rename', conversation_id=conversation.id) }}">
+            <i class="bi bi-pencil" aria-hidden="true"></i> Rename
+        </a>
+        <a class="btn btn-outline-secondary btn-sm app-touch" href="{{ url_for('chat.delete', conversation_id=conversation.id) }}">
+            <i class="bi bi-trash" aria-hidden="true"></i> Delete
+        </a>
         {% endif %}
-    </div>
+    </nav>
+    {% if conversation %}
+    <p class="small text-body-secondary">
+        The assistant remembers the last {{ max_history }} messages of this chat. Other chats are kept separate.
+    </p>
+    {% endif %}
 
     {% if fallback_mode %}
     <div class="alert alert-warning" role="status">

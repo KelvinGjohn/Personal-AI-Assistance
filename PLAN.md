@@ -24,7 +24,7 @@ One day at a time. A day is only marked done when its feature works and is teste
 | 15 | AI task assistance | Natural-language task creation (confirm first) | Done |
 | 16 | AI reminder assistance | Natural-language reminders (confirm first) | Done |
 | 17 | AI over personal data | Answers about the user's own notes/tasks | Done |
-| 18 | Conversation memory | Saved, resumable, deletable conversations | |
+| 18 | Conversation memory | Saved, resumable, deletable conversations | Done |
 | **Phase 4 — Advanced features** ||||
 | 19 | Notifications | In-app notifications, mark as read | |
 | 20 | Search | Global search with filters | |

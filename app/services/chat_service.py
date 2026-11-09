@@ -6,6 +6,8 @@ Every lookup includes user_id, so one user can never reach another user's chats.
 
 from datetime import timedelta
 
+from sqlalchemy import func
+
 from app.extensions import db
 from app.models import Conversation, Message
 from app.services.ai_service import FALLBACK_LABEL, AIServiceError, ask_ai
@@ -13,7 +15,11 @@ from app.services.common import get_owned_or_404
 from app.services.personal_data import add_context_to_question
 from app.utils import utc_now
 
-MAX_HISTORY_MESSAGES = 20  # How many earlier messages the AI sees (Day 18 reviews this)
+# How much of a chat the AI "remembers": the last 20 messages, but never more
+# than about 40,000 characters (roughly 10,000 tokens), so a chat with very
+# long answers doesn't become slow and expensive. The oldest messages go first.
+MAX_HISTORY_MESSAGES = 20
+MAX_HISTORY_CHARACTERS = 40_000
 TITLE_LENGTH = 60
 
 # Each AI answer costs money, so one account can't send an unlimited number
@@ -70,6 +76,8 @@ def build_ai_messages(conversation, text, personal_context=None):
     if conversation is not None:
         history = [message for message in conversation.messages if not is_fallback_message(message)]
         history = history[-MAX_HISTORY_MESSAGES:]
+        while history and sum(len(message.content) for message in history) > MAX_HISTORY_CHARACTERS:
+            history.pop(0)
 
         # A conversation sent to the AI must begin with a user message
         while history and history[0].role != "user":
@@ -118,3 +126,19 @@ def send_message(user_id, conversation, text, personal_context=None):
     conversation.updated_at = utc_now()
     db.session.commit()
     return conversation
+
+
+def build_conversation_list(user_id):
+    """
+    The user's chats, most recently used first, each with its number of messages.
+
+    Counting in the database with GROUP BY means the messages themselves
+    aren't loaded just to count them. Each item is (conversation, count).
+    """
+    return (
+        db.session.query(Conversation, func.count(Message.id))
+        .outerjoin(Message)
+        .filter(Conversation.user_id == user_id)
+        .group_by(Conversation.id)
+        .order_by(Conversation.updated_at.desc(), Conversation.id.desc())
+    )

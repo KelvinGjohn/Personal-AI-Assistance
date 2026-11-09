@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% from "partials/form_field.html" import render_field %}
+
+{% block title %}Rename chat{% endblock %}
+{% block page_title %}Rename chat{% endblock %}
+
+{% block content %}
+<div class="card app-card app-form-card">
+    <div class="card-body">
+        <form method="post" novalidate>
+            {{ form.hidden_tag() }}
+            {{ render_field(form.title, autofocus=true, maxlength=200) }}
+            <div class="d-flex gap-2">
+                {{ form.submit(class="btn btn-primary") }}
+                <a class="btn btn-outline-secondary" href="{{ url_for('chat.conversation', conversation_id=conversation.id) }}">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

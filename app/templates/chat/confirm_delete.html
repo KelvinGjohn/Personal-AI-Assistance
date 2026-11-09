@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+
+{% block title %}Delete chat{% endblock %}
+{% block page_title %}Delete chat{% endblock %}
+
+{% block content %}
+<div class="card app-card app-form-card">
+    <div class="card-body">
+        <p class="fw-medium text-break">Delete "{{ conversation.title }}"?</p>
+        <p class="text-body-secondary">All of its messages will be deleted too. This can't be undone.</p>
+        <form method="post" class="d-flex gap-2">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <button class="btn btn-danger" type="submit">Delete chat</button>
+            <a class="btn btn-outline-secondary" href="{{ url_for('chat.conversation', conversation_id=conversation.id) }}">Cancel</a>
+        </form>
+    </div>
+</div>
+{% endblock %}

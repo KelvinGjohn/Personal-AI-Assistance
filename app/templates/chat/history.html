@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% from "partials/pagination.html" import render_pagination %}
+
+{% block title %}All chats{% endblock %}
+{% block page_title %}All chats{% endblock %}
+
+{% block content %}
+<div class="app-chat">
+    <div class="d-flex justify-content-between align-items-center gap-3 mb-3">
+        <p class="text-body-secondary mb-0" role="status">
+            {{ pagination.total }} chat{{ "" if pagination.total == 1 else "s" }}
+        </p>
+        <a class="btn btn-primary" href="{{ url_for('chat.new') }}">
+            <i class="bi bi-plus-lg" aria-hidden="true"></i> New chat
+        </a>
+    </div>
+
+    <section class="card app-card" aria-label="Chat list">
+        {% if pagination.items %}
+        <ul class="list-group list-group-flush">
+            {% for conversation, message_count in pagination.items %}
+            <li class="list-group-item app-item">
+                <div class="app-item-body">
+                    <a class="fw-medium text-break" href="{{ url_for('chat.conversation', conversation_id=conversation.id) }}">{{ conversation.title }}</a>
+                    <div class="small text-body-secondary">
+                        {{ message_count }} message{{ "" if message_count == 1 else "s" }} · Last used {{ conversation.updated_at | datetime_short }}
+                    </div>
+                </div>
+                <div class="app-item-actions">
+                    <a class="btn app-icon-button" href="{{ url_for('chat.rename', conversation_id=conversation.id) }}" aria-label="Rename: {{ conversation.title }}">
+                        <i class="bi bi-pencil" aria-hidden="true"></i>
+                    </a>
+                    <a class="btn app-icon-button" href="{{ url_for('chat.delete', conversation_id=conversation.id) }}" aria-label="Delete: {{ conversation.title }}">
+                        <i class="bi bi-trash" aria-hidden="true"></i>
+                    </a>
+                </div>
+            </li>
+            {% endfor %}
+        </ul>
+        {% else %}
+        <div class="card-body app-empty">
+            <i class="bi bi-chat-dots" aria-hidden="true"></i>
+            <p class="mb-0">You have no saved chats yet.</p>
+            <a href="{{ url_for('chat.new') }}">Start a chat</a>
+        </div>
+        {% endif %}
+    </section>
+
+    {{ render_pagination(pagination, "chat.history", {}) }}
+</div>
+{% endblock %}
