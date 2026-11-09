@@ -10,6 +10,7 @@ from app.extensions import db
 from app.models import Conversation, Message
 from app.services.ai_service import FALLBACK_LABEL, AIServiceError, ask_ai
 from app.services.common import get_owned_or_404
+from app.services.personal_data import add_context_to_question
 from app.utils import utc_now
 
 MAX_HISTORY_MESSAGES = 20  # How many earlier messages the AI sees (Day 18 reviews this)
@@ -55,12 +56,15 @@ def is_fallback_message(message):
     return message.role == "assistant" and message.content.startswith(FALLBACK_LABEL)
 
 
-def build_ai_messages(conversation, text):
+def build_ai_messages(conversation, text, personal_context=None):
     """
     The list of messages to send to the AI: recent history plus the new message.
 
     Fallback replies are left out, because they aren't real answers and the AI
     shouldn't treat them as things it said.
+
+    personal_context (the user's own data) is added to the new message only.
+    It is never saved, so later messages don't send it again unless asked.
     """
     history = []
     if conversation is not None:
@@ -72,6 +76,8 @@ def build_ai_messages(conversation, text):
             history.pop(0)
 
     messages = [{"role": message.role, "content": message.content} for message in history]
+    if personal_context:
+        text = add_context_to_question(personal_context, text)
     messages.append({"role": "user", "content": text})
     return messages
 
@@ -84,7 +90,7 @@ def make_title(text):
     return title
 
 
-def send_message(user_id, conversation, text):
+def send_message(user_id, conversation, text, personal_context=None):
     """
     Ask the AI, then save the question and answer together. Returns the
     conversation, which is new if conversation is None.
@@ -99,7 +105,7 @@ def send_message(user_id, conversation, text):
             "Please wait a while and try again."
         )
 
-    answer = ask_ai(build_ai_messages(conversation, text))
+    answer = ask_ai(build_ai_messages(conversation, text, personal_context))
     answer_text = answer.text + CUT_OFF_NOTE if answer.is_cut_off else answer.text
 
     if conversation is None:

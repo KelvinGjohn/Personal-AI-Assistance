@@ -1,7 +1,7 @@
 """The form for sending a chat message."""
 
 from flask_wtf import FlaskForm
-from wtforms import TextAreaField
+from wtforms import BooleanField, TextAreaField
 from wtforms.validators import DataRequired, Length
 
 from app.forms.auth_forms import clean_text
@@ -15,3 +15,5 @@ class ChatForm(FlaskForm):
         Length(max=MAX_MESSAGE_LENGTH,
                message=f"Message must be {MAX_MESSAGE_LENGTH} characters or fewer."),
     ])
+    # Off unless the user ticks it, because it sends their data to the AI provider
+    use_my_data = BooleanField("Use my tasks, reminders and notes")
