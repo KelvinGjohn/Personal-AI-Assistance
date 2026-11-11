@@ -11,6 +11,7 @@ from sqlalchemy import text
 
 from app.extensions import db
 from app.services.dashboard_service import get_dashboard_data
+from app.utils import get_user_timezone
 
 main_bp = Blueprint("main", __name__)
 
@@ -19,7 +20,8 @@ main_bp = Blueprint("main", __name__)
 @login_required
 def index():
     """The logged-in user's dashboard. Visitors are redirected to the login page."""
-    return render_template("dashboard.html", **get_dashboard_data(current_user.id))
+    data = get_dashboard_data(current_user.id, tz=get_user_timezone())
+    return render_template("dashboard.html", **data)
 
 
 @main_bp.route("/health")

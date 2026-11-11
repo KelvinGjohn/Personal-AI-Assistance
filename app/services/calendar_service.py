@@ -14,6 +14,7 @@ from app.models import Reminder, Task
 
 VIEWS = ("day", "week")
 DEFAULT_VIEW = "week"
+NEW_ITEM_HOUR = 9  # the time filled in when a form is opened from a calendar day
 
 
 @dataclass
@@ -45,6 +46,15 @@ def parse_day(text, today):
     except ValueError:
         return today
     return day if is_allowed_day(day) else today
+
+
+def starting_time(text):
+    """
+    For "New task" and "New reminder" opened from a calendar day: 09:00 on that
+    day, ready to fill in the form. None if the address has no valid date.
+    """
+    day = parse_day(text, None)
+    return datetime.combine(day, time(NEW_ITEM_HOUR)) if day else None
 
 
 def week_start(day):
@@ -115,3 +125,9 @@ def get_days(user_id, first_day, number_of_days, tz, today):
 
 def count_items(days):
     return sum(len(day.items) for day in days)
+
+
+def count_items_today(user_id, now, tz):
+    """How many tasks and reminders are on today's calendar, for the dashboard."""
+    today = to_zone(now, tz).date()
+    return count_items(get_days(user_id, today, 1, tz, today))

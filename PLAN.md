@@ -29,7 +29,7 @@ One day at a time. A day is only marked done when its feature works and is teste
 | 19 | Notifications | In-app notifications, mark as read | Done |
 | 20 | Search | Global search with filters | Done |
 | 21 | Calendar | Daily and weekly schedule views | Done |
-| 22 | Integration | All modules working together | |
+| 22 | Integration | All modules working together | Done |
 | **Phase 5 — Testing, security, optimization** ||||
 | 23 | Functional testing | Test report | |
 | 24 | Security testing | Security report, CSRF, access checks | |

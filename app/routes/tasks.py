@@ -6,6 +6,7 @@ from flask_login import current_user, login_required
 from app.extensions import db
 from app.forms.task_forms import TaskForm, TaskRequestForm
 from app.services.ai_service import AIServiceError
+from app.services.calendar_service import starting_time
 from app.services.task_assistant import suggest_task
 from app.models import Task
 from app.models.task import PRIORITIES
@@ -70,6 +71,10 @@ def new():
         db.session.commit()
         flash(f'Task "{task.title}" created.', "success")
         return redirect(url_for("tasks.index"))
+
+    # Opened from a calendar day (/tasks/new?date=2026-11-12): start with that day
+    if request.method == "GET" and starting_time(request.args.get("date")):
+        form.due_date.data = starting_time(request.args.get("date"))
 
     return render_template("tasks/form.html", form=form, heading="New task",
                            categories=get_user_categories(current_user.id))

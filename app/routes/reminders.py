@@ -7,6 +7,7 @@ from app.extensions import db
 from app.forms.reminder_forms import ReminderForm, ReminderRequestForm
 from app.models import Reminder
 from app.services.ai_service import AIServiceError
+from app.services.calendar_service import starting_time
 from app.services.reminder_assistant import suggest_reminder
 from app.services.common import paginate_query
 from app.services.reminder_service import (
@@ -59,6 +60,10 @@ def new():
         db.session.commit()
         flash(f'Reminder "{reminder.title}" created.', "success")
         return redirect(url_for("reminders.index"))
+
+    # Opened from a calendar day (/reminders/new?date=2026-11-12): start with that day
+    if request.method == "GET" and starting_time(request.args.get("date")):
+        form.remind_at.data = starting_time(request.args.get("date"))
 
     return render_template("reminders/form.html", form=form, heading="New reminder")
 

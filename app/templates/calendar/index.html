@@ -71,10 +71,10 @@
     {% endif %}
 </section>
 <div class="d-flex flex-wrap gap-2 mt-3">
-    <a class="btn btn-outline-secondary app-touch" href="{{ url_for('tasks.new') }}">
+    <a class="btn btn-outline-secondary app-touch" href="{{ url_for('tasks.new', date=selected.isoformat()) }}">
         <i class="bi bi-plus-lg" aria-hidden="true"></i> New task
     </a>
-    <a class="btn btn-outline-secondary app-touch" href="{{ url_for('reminders.new') }}">
+    <a class="btn btn-outline-secondary app-touch" href="{{ url_for('reminders.new', date=selected.isoformat()) }}">
         <i class="bi bi-plus-lg" aria-hidden="true"></i> New reminder
     </a>
 </div>

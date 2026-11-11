@@ -7,8 +7,10 @@ dashboard can never include another user's data.
 """
 
 from datetime import timedelta
+from zoneinfo import ZoneInfo
 
 from app.models import Conversation, Note, Reminder, Task
+from app.services.calendar_service import count_items_today
 from app.services.reminder_service import count_due_reminders
 from app.utils import utc_now
 
@@ -80,24 +82,28 @@ def build_summary_cards(task_stats, upcoming_reminder_count, note_count, convers
     return [
         {
             "label": "Pending tasks",
+            "endpoint": "tasks.index",
             "icon": "bi-check2-square",
             "value": task_stats["pending"],
             "detail": f"{task_stats['overdue']} overdue · {task_stats['total']} in total",
         },
         {
             "label": "Upcoming reminders",
+            "endpoint": "reminders.index",
             "icon": "bi-alarm",
             "value": upcoming_reminder_count,
             "detail": "still to come",
         },
         {
             "label": "Notes",
+            "endpoint": "notes.index",
             "icon": "bi-journal-text",
             "value": note_count,
             "detail": "saved",
         },
         {
             "label": "Conversations",
+            "endpoint": "chat.history",
             "icon": "bi-chat-dots",
             "value": conversation_count,
             "detail": "with the assistant",
@@ -105,14 +111,17 @@ def build_summary_cards(task_stats, upcoming_reminder_count, note_count, convers
     ]
 
 
-def get_dashboard_data(user_id, now=None):
+def get_dashboard_data(user_id, now=None, tz=None):
     """
     Gather everything the dashboard needs for one user.
 
-    `now` can be passed in so tests can use a fixed time.
+    `now` can be passed in so tests can use a fixed time. `tz` is the user's
+    time zone, which decides where "today" starts and ends.
     """
     if now is None:
         now = utc_now()
+    if tz is None:
+        tz = ZoneInfo("UTC")
 
     task_stats = get_task_stats(user_id, now)
     upcoming_reminder_count = (
@@ -130,4 +139,5 @@ def get_dashboard_data(user_id, now=None):
         "tasks_due_soon": get_tasks_due_soon(user_id, now),
         "upcoming_reminders": get_upcoming_reminders(user_id, now),
         "recent_notes": get_recent_notes(user_id),
+        "today_count": count_items_today(user_id, now, tz),
     }
