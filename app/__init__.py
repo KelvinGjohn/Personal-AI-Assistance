@@ -66,6 +66,7 @@ def register_blueprints(app):
     """Connect each group of routes (Blueprint) to the app."""
     from app.routes.auth import auth_bp
     from app.routes.main import main_bp
+    from app.routes.calendar import calendar_bp
     from app.routes.chat import chat_bp
     from app.routes.notes import notes_bp
     from app.routes.notifications import notifications_bp
@@ -83,6 +84,7 @@ def register_blueprints(app):
     app.register_blueprint(chat_bp)
     app.register_blueprint(notifications_bp)
     app.register_blueprint(search_bp)
+    app.register_blueprint(calendar_bp)
 
 
 def register_template_helpers(app):

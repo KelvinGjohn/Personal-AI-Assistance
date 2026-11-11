@@ -1,0 +1,102 @@
+{% extends "base.html" %}
+
+{% block title %}Calendar{% endblock %}
+{% block page_title %}Calendar{% endblock %}
+
+{# One task or reminder: its time, an icon for its type, and a link to edit it #}
+{% macro calendar_item(item) %}
+<li class="list-group-item app-calendar-item">
+    <span class="app-calendar-time {{ 'app-text-overdue' if item.is_late else 'text-body-secondary' }}">{{ item.time.strftime("%H:%M") }}</span>
+    <i class="bi {{ 'bi-check2-square' if item.kind == 'task' else 'bi-alarm' }} text-body-secondary" aria-hidden="true"></i>
+    <span class="app-calendar-title">
+        <a class="text-break {{ 'app-item-done' if item.is_done }}"
+           href="{{ url_for('tasks.edit', task_id=item.id) if item.kind == 'task' else url_for('reminders.edit', reminder_id=item.id) }}">{{ item.title }}</a>
+        <span class="visually-hidden">
+            ({{ item.kind }}{% if item.is_done %}, done{% elif item.is_late %}, {{ 'overdue' if item.kind == 'task' else 'due' }}{% endif %})
+        </span>
+    </span>
+</li>
+{% endmacro %}
+
+{% block content %}
+<div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+    <div class="btn-group" role="group" aria-label="Choose a view">
+        <a class="btn app-touch {{ 'btn-primary' if view == 'day' else 'btn-outline-secondary' }}"
+           href="{{ url_for('calendar.index', view='day', date=selected.isoformat()) }}"
+           {% if view == 'day' %}aria-current="true"{% endif %}>Day</a>
+        <a class="btn app-touch {{ 'btn-primary' if view == 'week' else 'btn-outline-secondary' }}"
+           href="{{ url_for('calendar.index', view='week', date=selected.isoformat()) }}"
+           {% if view == 'week' %}aria-current="true"{% endif %}>Week</a>
+    </div>
+
+    <nav class="btn-group" aria-label="Move through the calendar">
+        {% if previous_day %}
+        <a class="btn btn-outline-secondary app-touch" aria-label="Previous {{ view }}"
+           href="{{ url_for('calendar.index', view=view, date=previous_day.isoformat()) }}">
+            <i class="bi bi-chevron-left" aria-hidden="true"></i>
+        </a>
+        {% endif %}
+        <a class="btn btn-outline-secondary app-touch" href="{{ url_for('calendar.index', view=view) }}">Today</a>
+        {% if next_day %}
+        <a class="btn btn-outline-secondary app-touch" aria-label="Next {{ view }}"
+           href="{{ url_for('calendar.index', view=view, date=next_day.isoformat()) }}">
+            <i class="bi bi-chevron-right" aria-hidden="true"></i>
+        </a>
+        {% endif %}
+    </nav>
+</div>
+
+<h2 class="h5 mb-1">
+    {% if view == "day" %}
+    {{ days[0].date.strftime("%A, %d %B %Y") }}
+    {% else %}
+    {{ days[0].date.strftime("%d %b") }} to {{ days[-1].date.strftime("%d %b %Y") }}
+    {% endif %}
+</h2>
+<p class="text-body-secondary small" role="status">
+    {{ total }} item{{ "" if total == 1 else "s" }} · tasks appear on their due date, reminders at their time
+</p>
+
+{% if view == "day" %}
+<section class="card app-card" aria-label="Schedule for the day">
+    {% if days[0].items %}
+    <ul class="list-group list-group-flush">
+        {% for item in days[0].items %}{{ calendar_item(item) }}{% endfor %}
+    </ul>
+    {% else %}
+    <div class="card-body app-empty">
+        <i class="bi bi-calendar3" aria-hidden="true"></i>
+        <p class="mb-0">Nothing scheduled for this day.</p>
+    </div>
+    {% endif %}
+</section>
+<div class="d-flex flex-wrap gap-2 mt-3">
+    <a class="btn btn-outline-secondary app-touch" href="{{ url_for('tasks.new') }}">
+        <i class="bi bi-plus-lg" aria-hidden="true"></i> New task
+    </a>
+    <a class="btn btn-outline-secondary app-touch" href="{{ url_for('reminders.new') }}">
+        <i class="bi bi-plus-lg" aria-hidden="true"></i> New reminder
+    </a>
+</div>
+{% else %}
+<div class="app-week">
+    {% for day in days %}
+    <section class="card app-card {{ 'app-calendar-today' if day.is_today }}" aria-labelledby="day-{{ day.date.isoformat() }}">
+        <div class="card-header bg-transparent">
+            <h3 class="h6 mb-0" id="day-{{ day.date.isoformat() }}">
+                <a href="{{ url_for('calendar.index', view='day', date=day.date.isoformat()) }}">{{ day.date.strftime("%a %d %b") }}</a>
+                {% if day.is_today %}<span class="badge text-bg-primary ms-1">Today</span>{% endif %}
+            </h3>
+        </div>
+        {% if day.items %}
+        <ul class="list-group list-group-flush">
+            {% for item in day.items %}{{ calendar_item(item) }}{% endfor %}
+        </ul>
+        {% else %}
+        <div class="card-body small text-body-secondary">Nothing scheduled</div>
+        {% endif %}
+    </section>
+    {% endfor %}
+</div>
+{% endif %}
+{% endblock %}

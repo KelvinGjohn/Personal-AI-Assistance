@@ -25,12 +25,15 @@ def test_sidebar_marks_dashboard_as_current_page(auth_client):
     assert 'href="/"' in html
 
 
-def test_unbuilt_pages_are_disabled_not_broken_links(auth_client):
+def test_every_menu_item_is_a_working_link(auth_client):
     html = page_html(auth_client)
-    # Pages from later days are shown with their day, with no link to a missing route
-    assert "Day 21" in html
-    assert 'href="/calendar' not in html
-    assert 'aria-disabled="true"' in html
+    # Every page is built now, so nothing is left disabled with a "Day N" badge
+    assert 'aria-disabled="true"' not in html
+    assert "app-badge-soon" not in html
+    for path in ("/tasks", "/reminders", "/notes", "/calendar", "/search", "/notifications", "/settings", "/chat"):
+        assert f'href="{path}"' in html
+        # The chat page redirects to a conversation, so follow redirects
+        assert auth_client.get(path, follow_redirects=True).status_code == 200
 
 
 def test_dashboard_shows_all_summary_cards(auth_client):

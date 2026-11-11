@@ -2,7 +2,7 @@
 
 A web-based personal productivity assistant built with Python and Flask. Users can chat with an AI, manage tasks, reminders and notes, and see everything on one dashboard.
 
-> **Status:** Day 20 of 29 — accounts, settings, dashboard, tasks, reminders, notes, saved AI chats, notifications and global search work. The AI can create tasks and reminders from plain language and, when you allow it, answer questions about your own data. For sample data, run `python scripts/seed_demo_data.py`, which prints a login for the demo account.
+> **Status:** Day 21 of 29 — accounts, settings, dashboard, tasks, reminders, notes, saved AI chats, notifications, global search and a day/week calendar work. The AI can create tasks and reminders from plain language and, when you allow it, answer questions about your own data. For sample data, run `python scripts/seed_demo_data.py`, which prints a login for the demo account.
 
 ## Planned technology stack
 

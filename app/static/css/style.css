@@ -485,6 +485,42 @@ body {
     color: #a8a29e;
 }
 
+/* ---------- Calendar ---------- */
+/* One day under another on phones; seven columns side by side on wide screens */
+.app-week {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 12px;
+}
+
+@media (min-width: 1400px) {
+    .app-week {
+        grid-template-columns: repeat(7, minmax(0, 1fr));
+        align-items: start;
+    }
+}
+
+.app-calendar-today {
+    border-color: var(--app-accent);
+    border-width: 2px;
+}
+
+.app-calendar-item {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+}
+
+.app-calendar-time {
+    flex-shrink: 0;
+    font-variant-numeric: tabular-nums;
+}
+
+.app-calendar-title {
+    flex: 1;
+    min-width: 0; /* lets long titles wrap */
+}
+
 /* ---------- Small screens ---------- */
 @media (max-width: 575.98px) {
     .app-content {
